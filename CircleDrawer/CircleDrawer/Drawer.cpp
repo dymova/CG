@@ -47,17 +47,9 @@ void Drawer::drawPoint(QImage* image, int x, int y, QColor color)
 	newX = (image->bytesPerLine() / 2) + x*BYTES_IN_PIXEL;
 	newY = (image->height() / 2) + y;
 
-	if (newX <= (image->bytesPerLine() - 3) 
-		&& newY < (image->height())
-		&& newX >=0
-		&& newY >= 0 )
-//	if (abs(x) < (image->bytesPerLine() / 2) && abs(y) < (image->height() / 2)) //todo (r=105 -> crash)
-//	if (x < image->width() && y < image->height() && y >= 0 && x >= 0)
-//	if (newX < image->width() && newY < image->height() && newY >= 0 && newX >= 0)
+	if (newX <= (image->bytesPerLine() - 3) && newY < (image->height()) && newX >=0 && newY >= 0 )
 	{
-//		point = image->bits() + (newY * image->bytesPerLine()) + newX*BYTES_IN_PIXEL;
-		point = image->bits() + (newY * image->bytesPerLine()) + newX;
-//		point = image->bits() + (y * image->bytesPerLine()) + x*BYTES_IN_PIXEL;
+		point = image->bits() + ((image->height() - newY) * image->bytesPerLine()) + newX;
 
 		*point = color.red();
 		*++point = color.green();
