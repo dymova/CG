@@ -1,0 +1,132 @@
+#include "GuiModeController.h"
+#include "JsonParserException.h"
+#include <QtWidgets/QMessageBox>
+#include <QObject>
+#include "MainWindow.h"
+#include <QtWidgets/QFileDialog>
+#include <QtWidgets/QVBoxLayout>
+
+
+GuiModeController::GuiModeController()
+{
+}
+
+
+
+GuiModeController::~GuiModeController()
+{
+	delete config;
+	delete serializer;
+	delete parser;
+	delete mainWindow;
+}
+
+void GuiModeController::run(QString path)
+{
+	parser = new saveAndLoadConfig::ConfigParser();
+	try
+	{
+		config = parser->parse(path);
+		serializer = new saveAndLoadConfig::Serializer();
+
+		drawPanel = new DrawPanel(config);
+		QGroupBox* controlsPanel;
+		initControllersPanel(controlsPanel);
+
+		mainWindow = new MainWindow(drawPanel, controlsPanel);
+
+		connect(mainWindow, SIGNAL(open(QString)), SLOT(open(QString)));
+		connect(mainWindow, SIGNAL(save(QString)), SLOT(save(QString)));
+
+		mainWindow->show();
+	}
+	catch (JsonParserException& exception)
+	{
+		QMessageBox::critical(0, "Error", exception.what());
+	}
+
+}
+void GuiModeController::initControllersPanel(QGroupBox*& controlsPanel)
+{
+	controlsPanel = new QGroupBox("Controls");
+	Circle* circle = config->getCircles().first();
+
+	int r = circle->getR();
+	int x = circle->getPositionX();
+	int y = circle->getPositionY();
+
+	QVBoxLayout* controlsLayout = new QVBoxLayout;
+	rControl = new ControlPanel("R", R_MIN, R_MAX, r);
+	xControl = new ControlPanel("Position X", POSITION_MIN, POSITION_MAX, x);
+	yControl = new ControlPanel("Position Y", POSITION_MIN, POSITION_MAX, y);
+
+
+	controlsLayout->addWidget(rControl);
+	controlsLayout->addWidget(xControl);
+	controlsLayout->addWidget(yControl);
+	controlsPanel->setLayout(controlsLayout);
+
+	connect(rControl, SIGNAL(valueChanged(int)), SLOT(setRValue(int)));
+	connect(xControl, SIGNAL(valueChanged(int)), SLOT(setXPositionValue(int)));
+	connect(yControl, SIGNAL(valueChanged(int)), SLOT(setYPositionValue(int)));
+}
+
+void GuiModeController::open(QString str)
+{
+	if (!str.isEmpty())
+	{
+		
+		try
+		{
+			delete config;
+			config = parser->parse(str);
+			drawPanel->setConfig(config); //todo delete
+			drawPanel->update();
+
+			Circle* circle = config->getCircles().first();
+			int sizeX = config->getPanel()->getSizeX();
+			int sizeY = config->getPanel()->getSizeY();
+			int r = circle->getR();
+			int x = circle->getPositionX();
+			int y = circle->getPositionY();
+
+			rControl->setValue(r);
+			xControl->setValue(x);
+			yControl->setValue(y);
+		}
+		catch (JsonParserException& exception)
+		{
+			QMessageBox::critical(0, "Error", exception.what());
+		}
+
+	}
+}
+
+void GuiModeController::save(QString str) const
+{
+	if (!str.isEmpty())
+	{
+		serializer->serialize(str, config);
+	}
+}
+
+void GuiModeController::setRValue(int r)
+{
+	config->getCircles().first()->setR(r);
+	drawPanel->update();
+}
+
+void GuiModeController::setXPositionValue(int x)
+{
+	config->getCircles().first()->setPositionX(x);
+	drawPanel->update();
+}
+
+void GuiModeController::setYPositionValue(int y)
+{
+	config->getCircles().first()->setPositionY(y);
+	drawPanel->update();
+}
+
+
+

@@ -1,7 +1,6 @@
 #pragma once
 #include <QJsonObject>
 
-
 class Circle
 {
 private:

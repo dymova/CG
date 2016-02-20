@@ -3,6 +3,7 @@
 #include <QPushButton>
 #include "ConfigParser.h"
 #include "ConsoleModeController.h"
+#include "GuiModeController.h"
 
 
 int main(int argc, char *argv[])
@@ -19,8 +20,8 @@ int main(int argc, char *argv[])
 	}  
 	else
 	{
-		MainWindow w(DEFAULT_CONFIG_FILE);
-		w.show();
+		GuiModeController controller;
+		controller.run(DEFAULT_CONFIG_FILE);
 		return a.exec();
 	}
 
