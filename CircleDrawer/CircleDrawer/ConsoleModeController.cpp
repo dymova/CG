@@ -3,6 +3,7 @@
 #include "ConfigParser.h"
 #include <iostream>
 #include <QImage>
+#include "JsonParserException.h"
 
 
 ConsoleModeController::ConsoleModeController()
@@ -35,7 +36,7 @@ void ConsoleModeController::run(QString pathToFile)
 			std::cerr << "image wasn't saved" << std::endl;
 		}
 	}
-	catch (saveAndLoadConfig::ConfigParserException& exception)
+	catch (JsonParserException& exception)
 	{
 		std::cerr << exception.what() << std::endl;
 	}

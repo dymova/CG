@@ -18,7 +18,7 @@ DrawPanel::~DrawPanel()
 {
 }
 
-void DrawPanel::setConfig(Configuration* config)
+void DrawPanel::setConfig(Configuration* config) //todo to controller
 {
 	this->config = config;
 	int sizeX = config->getPanel()->getSizeX();
@@ -26,23 +26,6 @@ void DrawPanel::setConfig(Configuration* config)
 	setMinimumSize(sizeX, sizeY);
 }
 
-void DrawPanel::setRValue(int r)
-{
-	config->getCircles().first()->setR(r);
-	update();
-}
-
-void DrawPanel::setXPositionValue(int x)
-{
-	config->getCircles().first()->setPositionX(x);
-	update();
-}
-
-void DrawPanel::setYPositionValue(int y)
-{
-	config->getCircles().first()->setPositionY(y);
-	update();
-}
 
 void DrawPanel::paintEvent(QPaintEvent*/*event*/)
 {
@@ -67,7 +50,6 @@ void DrawPanel::paintEvent(QPaintEvent*/*event*/)
 			circleDrawer->drawCircle(&backBuffer, c);
 		}
 	}
-
 
 	painter.drawImage(0, 0, backBuffer);
 }

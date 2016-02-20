@@ -1,4 +1,7 @@
 #pragma once
+#include <QJsonObject>
+
+
 class Circle
 {
 private:
@@ -6,7 +9,7 @@ private:
 	int positionX;
 	int positionY;
 public:
-	Circle(int r, int x, int y);
+	Circle();
 	~Circle();
 	int getR() const;
 	int getPositionX() const;
@@ -16,7 +19,9 @@ public:
 	void setPositionX(int x);
 	void setPositionY(int y);
 
-
+	void read(const QJsonObject &json);
+	void checkValue(QString key, QJsonValue jsonValue);
+	void write(QJsonObject &json) const;
 
 };
 

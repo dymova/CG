@@ -14,9 +14,7 @@ public:
 	void setConfig(Configuration* config);
 
 public slots :
-	void setRValue(int r);
-	void setXPositionValue(int x);
-	void setYPositionValue(int y);
+
 
 protected:
 	void paintEvent(QPaintEvent *event);

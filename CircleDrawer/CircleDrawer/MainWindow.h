@@ -42,5 +42,9 @@ private slots:
 	void save();
 
 //	void setDrawPanelSize(int x, int y);
+	public slots:
+		void setRValue(int r);
+		void setXPositionValue(int x);
+		void setYPositionValue(int y);
 };
 

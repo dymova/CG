@@ -3,6 +3,7 @@
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QFile>
+#include "JsonParserException.h"
 #include "ConfigParser.h"
 
 namespace saveAndLoadConfig
@@ -23,31 +24,15 @@ namespace saveAndLoadConfig
 		QJsonArray circlesArr;
 		for (auto circle : circles)
 		{
-			int r = circle->getR();
-			int x = circle->getPositionX();
-			int y = circle->getPositionY();
-
-			QJsonObject positionObj;
-			positionObj[KEY_X] = x;
-			positionObj[KEY_Y] = y;
-
 			QJsonObject circleObj;
-			circleObj[KEY_R] = r;
-			circleObj[KEY_POSITION] = positionObj;
-
+			circle->write(circleObj);
 			circlesArr.append(circleObj);
 		}
-
-		int sizeX = config->getPanel()->getSizeX();
-		int sizeY = config->getPanel()->getSizeY();
-		QJsonObject sizeObj;
-		sizeObj[KEY_X] = sizeX;
-		sizeObj[KEY_Y] = sizeY;
-		QJsonObject panelObj;
-		panelObj[KEY_SIZE] = sizeObj;
-
 		QJsonObject jsonObject;
 		jsonObject[KEY_CIRCLES] = circlesArr;
+
+		QJsonObject panelObj;
+		config->getPanel()->write(panelObj);
 		jsonObject[KEY_PANEL] = panelObj;
 
 		QJsonDocument jsonDocument(jsonObject);
@@ -58,11 +43,11 @@ namespace saveAndLoadConfig
 		}
 		if (!jsonFile.open(QIODevice::WriteOnly))
 		{
-			throw ConfigParserException("error opening file for writing");
+			throw JsonParserException("error opening file for writing");
 		}
 		if (-1 == jsonFile.write(jsonDocument.toJson()))
 		{
-			throw ConfigParserException("error writing to file");
+			throw JsonParserException("error writing to file");
 		}
 	}
 }

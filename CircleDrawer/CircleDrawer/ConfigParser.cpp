@@ -6,6 +6,7 @@
 #include <QJsonObject>
 #include <QDebug>
 #include <iostream>
+#include "JsonParserException.h"
 
 namespace saveAndLoadConfig
 {
@@ -24,19 +25,19 @@ namespace saveAndLoadConfig
 		{
 			QString msg = "key """ + key + """ doesn't exist";
 			qDebug() << msg;
-			throw ConfigParserException(msg.toLocal8Bit().constData());
+			throw JsonParserException(msg.toLocal8Bit().constData());
 		}
 	}
 
 	QList<Circle*> ConfigParser::parseCircles(QJsonObject jsonObject)
 	{
-		QJsonValue jsonValue = jsonObject.value(KEY_CIRCLES);
-
+		QJsonValue jsonValue = jsonObject[KEY_CIRCLES];
 		checkValue(KEY_CIRCLES, jsonValue);
+
 		if (!jsonValue.isArray())
 		{
 			qDebug() << """circles"" should be array";
-			throw ConfigParserException("""circles"" should be array");
+			throw JsonParserException("""circles"" should be array");
 		}
 		QJsonArray jsonArray = jsonValue.toArray();
 
@@ -44,57 +45,19 @@ namespace saveAndLoadConfig
 		int r = 0;
 		int sizeX = 0;
 		int sizeY = 0;
-		QJsonValue positionValue;
-		QJsonValue sizeXValue;
-		QJsonValue sizeYValue;
-		QJsonValue rValue;
-		QJsonObject jsoneCircle;
-		QJsonObject jsonePosition;
+
+		QJsonObject jsonCircle;
+
 		foreach(const QJsonValue & value, jsonArray)
 			{
-				jsoneCircle = value.toObject();
-				rValue = jsoneCircle["R"];
-				checkValue(KEY_R, rValue);
-				r = rValue.toInt();
-
-				positionValue = jsoneCircle["position"];
-				checkValue(KEY_POSITION, positionValue);
-				jsonePosition = positionValue.toObject();
-
-				sizeXValue = jsonePosition["x"];
-				checkValue(KEY_X, sizeXValue);
-				sizeX = sizeXValue.toInt();
-
-				sizeYValue = jsonePosition["y"];
-				checkValue(KEY_Y, sizeYValue);
-				sizeY = sizeYValue.toInt();
-
-				circles.append(new Circle(r, sizeX, sizeY));
+				jsonCircle = value.toObject();
+				Circle* c = new Circle();
+				c->read(jsonCircle);
+				circles.append(c);
 			}
 		return circles;
 	}
 
-	Panel* ConfigParser::parsePanel(QJsonObject jsonObject)
-	{
-		QJsonValue panelValue = jsonObject["panel"];
-		checkValue(KEY_PANEL, panelValue);
-		QJsonObject jsonPanel = panelValue.toObject();
-
-		QJsonValue panelSizeValue = jsonPanel["size"];
-		checkValue(KEY_SIZE, panelSizeValue);
-
-		QJsonObject jsonPanelSize = panelSizeValue.toObject();
-
-		QJsonValue panelSizeXValue = jsonPanelSize["x"];
-		checkValue(KEY_X, panelSizeXValue);
-		int sizeX = panelSizeXValue.toInt();
-
-		QJsonValue panelSizeYValue = jsonPanelSize["y"];
-		checkValue(KEY_Y, panelSizeXValue);
-		int sizeY = panelSizeYValue.toInt();
-
-		return new Panel(sizeX, sizeY);
-	}
 
 	Configuration* ConfigParser::parse(QString pathToFile) 
 	{
@@ -103,13 +66,13 @@ namespace saveAndLoadConfig
 		if (!file.exists())
 		{
 			qDebug() << "file doesn't exist";
-			throw ConfigParserException("file doesn't exist");
+			throw JsonParserException("file doesn't exist");
 		}
 
 		if (!file.open(QIODevice::ReadOnly))
 		{
 			qDebug() << "error opening file for reading";
-			throw ConfigParserException("error opening file for reading");
+			throw JsonParserException("error opening file for reading");
 		}
 
 
@@ -119,19 +82,21 @@ namespace saveAndLoadConfig
 		if (text.isEmpty())
 		{
 			qDebug() << "empty config file";
-			throw ConfigParserException("empty config file");
+			throw JsonParserException("empty config file");
 		}
 
 		QJsonDocument doc = QJsonDocument::fromJson(text.toUtf8());
 		if (!doc.isObject())
 		{
 			qDebug() << "incorrect config file (document isn't json object)";
-			throw ConfigParserException("incorrect config file (document isn't json object)");
+			throw JsonParserException("incorrect config file (document isn't json object)");
 		}
 		QJsonObject jsonObject = doc.object();
 
 		QList<Circle*> circles = parseCircles(jsonObject);
-		Panel* panel = parsePanel(jsonObject);
+
+		Panel* panel = new Panel();
+		panel->read(jsonObject);
 
 
 		return new Configuration(circles, panel);

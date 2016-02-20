@@ -1,12 +1,14 @@
 ﻿#include "MainWindow.h"
 #include <QVBoxLayout>
+#include <QMessageBox>
 #include<QMenuBar>
 #include <QFileDialog>
 #include "ControlPanel.h"
 #include "Configuration.h"
 #include "Serializer.h"
+#include "JsonParserException.h"
 
-void MainWindow::initControllersPanel(QGroupBox*& controlsPanel) //todo
+void MainWindow::initControllersPanel(QGroupBox*& controlsPanel) 
 {
 	controlsPanel = new QGroupBox("Controls");
 	Circle* circle = config->getCircles().first();
@@ -26,52 +28,61 @@ void MainWindow::initControllersPanel(QGroupBox*& controlsPanel) //todo
 	controlsLayout->addWidget(yControl);
 	controlsPanel->setLayout(controlsLayout);
 
-	connect(rControl, SIGNAL(valueChanged(int)), drawPanel, SLOT(setRValue(int)));
-	connect(xControl, SIGNAL(valueChanged(int)), drawPanel, SLOT(setXPositionValue(int)));
-	connect(yControl, SIGNAL(valueChanged(int)), drawPanel, SLOT(setYPositionValue(int)));
+	connect(rControl, SIGNAL(valueChanged(int)), SLOT(setRValue(int)));
+	connect(xControl, SIGNAL(valueChanged(int)), SLOT(setXPositionValue(int)));
+	connect(yControl, SIGNAL(valueChanged(int)), SLOT(setYPositionValue(int)));
 }
 
 MainWindow::MainWindow(QString path)
 {
 	parser = new saveAndLoadConfig::ConfigParser();
-	config = parser->parse(path);
-	QWidget* mainWidget = new QWidget;
-	setWindowTitle("CircleDrawer");
+	try
+	{
+		config = parser->parse(path);
 
-	QWidget* centralWidget = new QWidget;
+		QWidget* mainWidget = new QWidget;
+		setWindowTitle("CircleDrawer");
 
-	QGroupBox* drawPanelBox = new QGroupBox("Draw Panel");
-	drawPanel = new DrawPanel(config);
+		QWidget* centralWidget = new QWidget;
+
+		QGroupBox* drawPanelBox = new QGroupBox("Draw Panel");
+		drawPanel = new DrawPanel(config);
 
 
-	QHBoxLayout* drawPanelLayout = new QHBoxLayout;
-	drawPanelLayout->setMargin(5);
-	drawPanelLayout->addWidget(drawPanel);
-	drawPanelBox->setLayout(drawPanelLayout);
+		QHBoxLayout* drawPanelLayout = new QHBoxLayout;
+		drawPanelLayout->setMargin(5);
+		drawPanelLayout->addWidget(drawPanel);
+		drawPanelBox->setLayout(drawPanelLayout);
 
-	QGroupBox* controlsPanel;
-	initControllersPanel(controlsPanel);
+		QGroupBox* controlsPanel;
+		initControllersPanel(controlsPanel);
 
-	QHBoxLayout* mainWidgetLayout = new QHBoxLayout;
-	mainWidgetLayout->setMargin(5);
-	mainWidgetLayout->addWidget(drawPanelBox);
-	mainWidgetLayout->addWidget(controlsPanel);
-	centralWidget->setLayout(mainWidgetLayout);
+		QHBoxLayout* mainWidgetLayout = new QHBoxLayout;
+		mainWidgetLayout->setMargin(5);
+		mainWidgetLayout->addWidget(drawPanelBox);
+		mainWidgetLayout->addWidget(controlsPanel);
+		centralWidget->setLayout(mainWidgetLayout);
 
-	QWidget* menuWidget = new QWidget;
-	menuWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+		QWidget* menuWidget = new QWidget;
+		menuWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-	QVBoxLayout* mainLayout = new QVBoxLayout;
-	mainLayout->setMargin(5);
-	mainLayout->addWidget(menuWidget);
-	mainLayout->addWidget(centralWidget);
-	mainWidget->setLayout(mainLayout);
+		QVBoxLayout* mainLayout = new QVBoxLayout;
+		mainLayout->setMargin(5);
+		mainLayout->addWidget(menuWidget);
+		mainLayout->addWidget(centralWidget);
+		mainWidget->setLayout(mainLayout);
 
-	createActions();
-	createMenus();
+		createActions();
+		createMenus();
 
-	setCentralWidget(mainWidget);
-	serializer = new saveAndLoadConfig::Serializer();
+		setCentralWidget(mainWidget);
+		serializer = new saveAndLoadConfig::Serializer();
+	}
+	catch (JsonParserException& exception)
+	{
+		QMessageBox::critical(0, "Error", exception.what());
+	}
+
 }
 
 MainWindow::~MainWindow()
@@ -107,20 +118,28 @@ void MainWindow::open()
 	if (!str.isEmpty())
 	{
 		delete config;
-		config = parser->parse(str);
-		drawPanel->setConfig(config);
-		drawPanel->update();
+		try
+		{
+			config = parser->parse(str);
+			drawPanel->setConfig(config); //todo delete
+			drawPanel->update();
 
-		Circle* circle = config->getCircles().first();
-		int sizeX = config->getPanel()->getSizeX();
-		int sizeY = config->getPanel()->getSizeY();
-		int r = circle->getR();
-		int x = circle->getPositionX();
-		int y = circle->getPositionY();
+			Circle* circle = config->getCircles().first();
+			int sizeX = config->getPanel()->getSizeX();
+			int sizeY = config->getPanel()->getSizeY();
+			int r = circle->getR();
+			int x = circle->getPositionX();
+			int y = circle->getPositionY();
 
-		rControl->setValue(r);
-		xControl->setValue(x);
-		yControl->setValue(y);
+			rControl->setValue(r);
+			xControl->setValue(x);
+			yControl->setValue(y);
+		}
+		catch (JsonParserException& exception)
+		{
+			QMessageBox::critical(this, "Error", exception.what());
+		}
+
 	}
 }
 
@@ -132,4 +151,23 @@ void MainWindow::save()
 		serializer->serialize(str, config);
 	}
 }
+
+void MainWindow::setRValue(int r)
+{
+	config->getCircles().first()->setR(r);
+	drawPanel->update();
+}
+
+void MainWindow::setXPositionValue(int x)
+{
+	config->getCircles().first()->setPositionX(x);
+	drawPanel->update();
+}
+
+void MainWindow::setYPositionValue(int y)
+{
+	config->getCircles().first()->setPositionY(y);
+	drawPanel->update();
+}
+
 

@@ -176,6 +176,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="JsonParserException.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainWindow.cpp" />
     <ClCompile Include="Panel.cpp" />
@@ -284,6 +285,7 @@
     <ClInclude Include="ConfigParser.h" />
     <ClInclude Include="Configuration.h" />
     <ClInclude Include="ConsoleModeController.h" />
+    <ClInclude Include="JsonParserException.h" />
     <ClInclude Include="Serializer.h" />
     <CustomBuild Include="ControlPanel.h">
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing ControlPanel.h...</Message>
