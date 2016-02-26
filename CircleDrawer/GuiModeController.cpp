@@ -64,7 +64,8 @@ void GuiModeController::initControllersPanel(QGroupBox*& controlsPanel)
 	controlsLayout->addWidget(rControl);
 	controlsLayout->addWidget(xControl);
 	controlsLayout->addWidget(yControl);
-	controlsPanel->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred));
+	
+	controlsPanel->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding));
 	controlsPanel->setLayout(controlsLayout);
 
 	connect(rControl, SIGNAL(valueChanged(int)), SLOT(setRValue(int)));

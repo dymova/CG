@@ -8,7 +8,7 @@
 MainWindow::MainWindow(DrawPanel* drawPanel, QGroupBox* controlsPanel)
 {
 	QWidget* mainWidget = new QWidget;
-	setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
+//	setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 
 	setWindowTitle("CircleDrawer");
 
@@ -29,7 +29,6 @@ MainWindow::MainWindow(DrawPanel* drawPanel, QGroupBox* controlsPanel)
 
 
 	QWidget* menuWidget = new QWidget;
-	menuWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
 	QVBoxLayout* mainLayout = new QVBoxLayout;
 	mainLayout->setMargin(5);
@@ -41,6 +40,8 @@ MainWindow::MainWindow(DrawPanel* drawPanel, QGroupBox* controlsPanel)
 	createMenus();
 
 	setCentralWidget(mainWidget);
+	resize(800, 600);
+
 }
 
 MainWindow::~MainWindow()

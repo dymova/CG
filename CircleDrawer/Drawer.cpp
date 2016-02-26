@@ -19,14 +19,38 @@ void Drawer::drawCircle(QImage* image, Circle* c)
 	int x0 = c->getPositionX();
 	int y0 = c->getPositionY();
 	QColor blueColor(0, 204, 204);
+ 
+	int y1 = y0 - r;
+	int y2 = y0 + r;
 
-
-	for (int y = y0 - r; y <= y0 + r; y++)
+	if (y2 > ((image->height()) / 2))
 	{
-		int bound = (int)(sqrt((double)(r*r - (y - y0) * (y - y0))));
-		for (int x = -bound + x0; x <= bound + x0; x++)
+		y2 = (image->height()) / 2;
+	}
+
+
+	if (y1 <= -(image->height()/2))
+	{
+		y1 = 1 - (image->height()/2);
+	}
+
+	for (y1; y1 <= y2; y1++)
+	{
+		int bound = (int)(sqrt((double)(r*r - (y1 - y0) * (y1 - y0))));
+		int x1 = -bound + x0;
+		int x2 = bound + x0;
+		if (x1 < -image->width()/2)
 		{
-			drawPoint(image, x, y, blueColor);
+			x1 = -image->width() / 2;
+		}
+		if (x2 >= image->width() / 2)
+		{
+			x2 = (image->width() / 2) - 1;
+		}
+
+		for (x1; x1<=x2; x1++)
+		{
+			drawPoint(image, x1, y1, blueColor);
 		}
 	}
 
@@ -40,20 +64,15 @@ void Drawer::drawPoint(QImage* image, int x, int y, QColor color)
 	
 	const int BYTES_IN_PIXEL = 3;
 
-//	newX = (image->bytesPerLine() / 2) + x*BYTES_IN_PIXEL;
-	int center = (image->bytesPerLine() / 2);
-	center -= (center % 3);
-	newX =  center + x*BYTES_IN_PIXEL;
+	newX = ((image->width() / 2) + x)*BYTES_IN_PIXEL;
+
 	newY = (image->height() / 2) - y;
 
-	if (newX <= (image->bytesPerLine() - 3) && newY < (image->height()) && newX >=0 && newY >= 0 )
-	{
-		point = image->bits() + ((newY) * image->bytesPerLine()) + newX;
+	
+	point = image->bits() + ((newY) * image->bytesPerLine()) + newX;
 
-		*point = color.red();
-		*++point = color.green();
-		*++point = color.blue();
-	}
+	*point = color.red();
+	*++point = color.green();
+	*++point = color.blue();
 
 }
-

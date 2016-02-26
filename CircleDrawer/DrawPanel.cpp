@@ -10,7 +10,7 @@ DrawPanel::DrawPanel(Configuration* c)
 	circleDrawer = new Drawer(this);
 	int sizeX = config->getPanel()->getSizeX();
 	int sizeY = config->getPanel()->getSizeY();
-	setMinimumSize(sizeX, sizeY);
+//	setMinimumSize(sizeX, sizeY);
 }
 
 DrawPanel::~DrawPanel()
@@ -22,7 +22,7 @@ void DrawPanel::setConfig(Configuration* config)
 	this->config = config;
 	int sizeX = config->getPanel()->getSizeX();
 	int sizeY = config->getPanel()->getSizeY();
-	setMinimumSize(sizeX, sizeY);
+//	setMinimumSize(sizeX, sizeY);
 }
 
 
