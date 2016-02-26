@@ -10,6 +10,7 @@ private:
 
 public:
 	Panel();
+	Panel(int x, int y);
 	~Panel();
 
 	const QString KEY_X = "x";
@@ -21,6 +22,9 @@ public:
 	int getSizeX() const;
 	int getSizeY() const;
 
+
+	void setSizeX(int size_x);
+	void setSizeY(int size_y);
 	void read(const QJsonObject &json);
 	void write(QJsonObject &json) const;
 };

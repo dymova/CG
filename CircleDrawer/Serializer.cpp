@@ -39,7 +39,6 @@ namespace saveAndLoadConfig
 		if (!jsonFile.exists())
 		{
 			jsonFile.setFileName(file + ".json");
-//			throw ConfigSerializerException("file doesn't exist");
 		}
 		if (!jsonFile.open(QIODevice::WriteOnly))
 		{

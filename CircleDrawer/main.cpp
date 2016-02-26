@@ -7,7 +7,6 @@
 
 int main(int argc, char *argv[])
 {
-	const QString DEFAULT_CONFIG_FILE = "defaultConfig.json";
 
 	QApplication a(argc, argv);
 	saveAndLoadConfig::ConfigParser parser;
@@ -20,7 +19,7 @@ int main(int argc, char *argv[])
 	else
 	{
 		GuiModeController controller;
-		controller.run(DEFAULT_CONFIG_FILE);
+		controller.run();
 		return a.exec();
 	}
 

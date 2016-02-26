@@ -9,6 +9,7 @@ private:
 	int positionY;
 public:
 	Circle();
+	Circle(int r, int x, int y);
 	~Circle();
 	int getR() const;
 	int getPositionX() const;

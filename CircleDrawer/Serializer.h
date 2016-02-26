@@ -1,5 +1,6 @@
 #pragma once
 #include "Configuration.h"
+#include <stdexcept>
 
 namespace saveAndLoadConfig
 {

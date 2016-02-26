@@ -26,9 +26,9 @@ void DrawPanel::setConfig(Configuration* config)
 }
 
 
-void DrawPanel::paintEvent(QPaintEvent*/*event*/)
+void DrawPanel::paintEvent(QPaintEvent*)
 {
-	resize(config->getPanel()->getSizeX(), config->getPanel()->getSizeY());
+//	resize(config->getPanel()->getSizeX(), config->getPanel()->getSizeY());
 	QPainter painter(this);
 	QImage backBuffer(width(), height(), QImage::Format_RGB888);
 

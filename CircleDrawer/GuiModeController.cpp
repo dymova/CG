@@ -19,12 +19,14 @@ GuiModeController::~GuiModeController()
 	delete mainWindow;
 }
 
-void GuiModeController::run(QString path)
+void GuiModeController::run()
 {
 	parser = new saveAndLoadConfig::ConfigParser();
 	try
 	{
-		config = parser->parse(path);
+		QList<Circle*> defaultCircles;
+		defaultCircles.append(new Circle(DEFAULT_RADIUS, DEFAULT_POSITION_X, DEFAULT_POSITION_Y));
+		config = new Configuration(defaultCircles, new Panel(DEFAULT_SIZE_X, DEFAULT_SIZE_Y));
 		serializer = new saveAndLoadConfig::Serializer();
 
 		drawPanel = new DrawPanel(config);

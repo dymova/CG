@@ -6,6 +6,10 @@ Panel::Panel()
 {
 }
 
+Panel::Panel(int x, int y) : sizeX(x), sizeY(y)
+{
+}
+
 Panel::~Panel()
 {
 }
@@ -18,6 +22,16 @@ int Panel::getSizeX() const
 int Panel::getSizeY() const
 {
 	return sizeY;
+}
+
+void Panel::setSizeX(int size_x)
+{
+	sizeX = size_x;
+}
+
+void Panel::setSizeY(int size_y)
+{
+	sizeY = size_y;
 }
 
 void Panel::read(const QJsonObject& jsonObject)

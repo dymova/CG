@@ -26,7 +26,7 @@ void Drawer::drawCircle(QImage* image, Circle* c)
 		int bound = (int)(sqrt((double)(r*r - (y - y0) * (y - y0))));
 		for (int x = -bound + x0; x <= bound + x0; x++)
 		{
-				drawPoint(image, x, y, blueColor);
+			drawPoint(image, x, y, blueColor);
 		}
 	}
 
@@ -40,7 +40,10 @@ void Drawer::drawPoint(QImage* image, int x, int y, QColor color)
 	
 	const int BYTES_IN_PIXEL = 3;
 
-	newX = (image->bytesPerLine() / 2) + x*BYTES_IN_PIXEL;
+//	newX = (image->bytesPerLine() / 2) + x*BYTES_IN_PIXEL;
+	int center = (image->bytesPerLine() / 2);
+	center -= (center % 3);
+	newX =  center + x*BYTES_IN_PIXEL;
 	newY = (image->height() / 2) - y;
 
 	if (newX <= (image->bytesPerLine() - 3) && newY < (image->height()) && newX >=0 && newY >= 0 )

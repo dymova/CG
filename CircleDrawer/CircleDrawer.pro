@@ -4,6 +4,8 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TEMPLATE = app
 TARGET = CircleDrawer
 
+CONFIG += c++11
+
 HEADERS += ./Circle.h \
     ./ConfigParser.h \
     ./Configuration.h \

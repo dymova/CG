@@ -7,6 +7,10 @@ Circle::Circle()
 {
 }
 
+Circle::Circle(int r, int x, int y) : radius(r), positionX(x), positionY(y)
+{
+}
+
 Circle::~Circle()
 {
 }

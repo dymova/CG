@@ -1,6 +1,6 @@
 ﻿#include "MainWindow.h"
 #include <QVBoxLayout>
-#include<QMenuBar>
+#include <QMenuBar>
 #include <QFileDialog>
 
 
@@ -8,6 +8,8 @@
 MainWindow::MainWindow(DrawPanel* drawPanel, QGroupBox* controlsPanel)
 {
 	QWidget* mainWidget = new QWidget;
+	setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
+
 	setWindowTitle("CircleDrawer");
 
 	QWidget* centralWidget = new QWidget;
@@ -23,7 +25,7 @@ MainWindow::MainWindow(DrawPanel* drawPanel, QGroupBox* controlsPanel)
 	mainWidgetLayout->addWidget(drawPanelBox);
 	mainWidgetLayout->addWidget(controlsPanel);
 	centralWidget->setLayout(mainWidgetLayout);
-	centralWidget->setSizePolicy(QSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred));
+//	centralWidget->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 
 
 	QWidget* menuWidget = new QWidget;
@@ -78,5 +80,3 @@ void MainWindow::save()
 	QString str = QFileDialog::getSaveFileName(this, "Save Dialog", "", "*.json");
 	emit save(str);
 }
-
-
