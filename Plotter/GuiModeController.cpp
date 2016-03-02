@@ -24,8 +24,8 @@ void GuiModeController::run()
 	parser = new saveAndLoadConfig::ConfigParser();
 	try
 	{
-        Lemniscate* defaultCircle = new Lemniscate(DEFAULT_XY, DEFAULT_XY, DEFAULT_XY, DEFAULT_XY);
-        config = new Configuration(defaultCircle, new Panel(DEFAULT_SIZE_X, DEFAULT_SIZE_Y));
+        Lemniscate* defaultLemniscate = new Lemniscate(DEFAULT_X1, DEFAULT_Y1, DEFAULT_X2, DEFAULT_Y2);
+        config = new Configuration(defaultLemniscate, new Panel(DEFAULT_HEIGHT, DEFAULT_WIDTH));
 		serializer = new saveAndLoadConfig::Serializer();
 
 		drawPanel = new DrawPanel(config);

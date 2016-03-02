@@ -20,7 +20,7 @@ protected:
 	void paintEvent(QPaintEvent *event);
 
 private:
-	Drawer*  circleDrawer;
+    Drawer*  drawer;
 	Configuration* config;
 	
 

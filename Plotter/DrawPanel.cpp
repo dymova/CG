@@ -7,7 +7,7 @@
 DrawPanel::DrawPanel(Configuration* c)
 {
 	config = c;
-	circleDrawer = new Drawer(this);
+    drawer = new Drawer(this);
 }
 
 DrawPanel::~DrawPanel()
@@ -23,16 +23,20 @@ void DrawPanel::setConfig(Configuration* config)
 void DrawPanel::paintEvent(QPaintEvent*)
 {
 //	resize(config->getPanel()->getSizeX(), config->getPanel()->getSizeY());
-//	QPainter painter(this);
-//	QImage backBuffer(width(), height(), QImage::Format_RGB888);
+    QPainter painter(this);
+    QImage backBuffer(width(), height(), QImage::Format_RGB888);
 
-//	uchar* pubBuffer = backBuffer.bits();
-//	if (!pubBuffer)
-//	{
-//		return;
-//	}
-//	int const whiteColor = 255;
-//	memset(pubBuffer, whiteColor, backBuffer.byteCount());
+    uchar* pubBuffer = backBuffer.bits();
+    if (!pubBuffer)
+    {
+        return;
+    }
+    int const whiteColor = 255;
+
+    memset(pubBuffer, whiteColor, backBuffer.byteCount());
+
+    drawer->drawAxis(&backBuffer);
+
 
 //	QList<Lemniscate*> circles = config->getLemniscate();
 //	if (!circles.isEmpty())
@@ -44,6 +48,6 @@ void DrawPanel::paintEvent(QPaintEvent*)
 //		}
 //	}
 
-//	painter.drawImage(0, 0, backBuffer);
+    painter.drawImage(0, 0, backBuffer);
 }
 

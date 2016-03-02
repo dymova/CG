@@ -15,10 +15,13 @@ public:
 
     const int XY_MIN = -10000;
     const int XY_MAX = 10000;
-    const int DEFAULT_XY = 0;
+    const int DEFAULT_X1 = 0;
+    const int DEFAULT_Y1 = -10;
+    const int DEFAULT_X2 = 0;
+    const int DEFAULT_Y2 = 10;
 
-    const int DEFAULT_SIZE_Y = 300;
-    const int DEFAULT_SIZE_X = 300;
+    const int DEFAULT_WIDTH = 300;
+    const int DEFAULT_HEIGHT = 300;
 
 
 private:

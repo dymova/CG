@@ -59,7 +59,6 @@ namespace saveAndLoadConfig
 		}
 		QJsonObject jsonObject = doc.object();
 
-//        QList<Lemniscate*> circles = parseCircles(jsonObject);
 
         Lemniscate* lemniscate = new Lemniscate();
         lemniscate->read(jsonObject);
