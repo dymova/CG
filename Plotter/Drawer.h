@@ -11,9 +11,11 @@ private:
 public:
 	Drawer(QObject *parent = 0);
 	void drawLemniscate(QImage* pBackBuffer, Lemniscate* c);
+    void drawFocus(QImage* pBackBuffer, int y0, int x0);
     void drawAxis(QImage* pBackBuffer);
 	void drawPoint(QImage* image, int x, int y, QColor c);
 
+    QPair<int, int> getFirstPoint(Lemniscate* l);
 };
 
 

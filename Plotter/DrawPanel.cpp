@@ -35,8 +35,11 @@ void DrawPanel::paintEvent(QPaintEvent*)
 
     memset(pubBuffer, whiteColor, backBuffer.byteCount());
 
+    Lemniscate* l = config->getLemniscate();
     drawer->drawAxis(&backBuffer);
-
+    drawer->drawFocus(&backBuffer, l->getX1(), l->getY1());
+    drawer->drawFocus(&backBuffer, l->getX2(), l->getY2());
+    drawer->drawLemniscate(&backBuffer, l);
 
 //	QList<Lemniscate*> circles = config->getLemniscate();
 //	if (!circles.isEmpty())
@@ -47,6 +50,7 @@ void DrawPanel::paintEvent(QPaintEvent*)
 //			circleDrawer->drawLemniscate(&backBuffer, c);
 //		}
 //	}
+
 
     painter.drawImage(0, 0, backBuffer);
 }
