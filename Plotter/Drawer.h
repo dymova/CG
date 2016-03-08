@@ -7,6 +7,11 @@ class Drawer : public QObject
 	Q_OBJECT
 private:
         const int BYTES_IN_PIXEL = 3;
+        QList<QPair<int, int>> neightboors;
+
+        int computeParam(int x, int y, Lemniscate* l);
+        QPair<int, int> getExtremePoint(Lemniscate* l, int k);
+        void updateNeighborhood(QList<QPair<int, int>>& neighborhood, int xStart, int yStart);
 
 public:
 	Drawer(QObject *parent = 0);
@@ -15,7 +20,7 @@ public:
     void drawAxis(QImage* pBackBuffer);
 	void drawPoint(QImage* image, int x, int y, QColor c);
 
-    QPair<int, int> getFirstPoint(Lemniscate* l);
+
 };
 
 

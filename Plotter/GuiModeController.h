@@ -18,7 +18,7 @@ public:
     const int DEFAULT_X1 = 0;
     const int DEFAULT_Y1 = -10;
     const int DEFAULT_X2 = 0;
-    const int DEFAULT_Y2 = 10;
+    const int DEFAULT_Y2 = 11;
 
     const int DEFAULT_WIDTH = 300;
     const int DEFAULT_HEIGHT = 300;

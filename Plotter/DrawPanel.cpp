@@ -8,6 +8,7 @@ DrawPanel::DrawPanel(Configuration* c)
 {
 	config = c;
     drawer = new Drawer(this);
+
 }
 
 DrawPanel::~DrawPanel()
@@ -40,17 +41,6 @@ void DrawPanel::paintEvent(QPaintEvent*)
     drawer->drawFocus(&backBuffer, l->getX1(), l->getY1());
     drawer->drawFocus(&backBuffer, l->getX2(), l->getY2());
     drawer->drawLemniscate(&backBuffer, l);
-
-//	QList<Lemniscate*> circles = config->getLemniscate();
-//	if (!circles.isEmpty())
-//	{
-//		Lemniscate* c = circles.first();
-//		if (circleDrawer)
-//		{
-//			circleDrawer->drawLemniscate(&backBuffer, c);
-//		}
-//	}
-
 
     painter.drawImage(0, 0, backBuffer);
 }

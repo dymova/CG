@@ -19,15 +19,15 @@ int Drawer::computeParam(int x, int y, Lemniscate* l) {
            ((x - x2)*(x - x2) + (y - y2)*(y - y2)) << 4;
 }
 
-QPair<int,int> Drawer::getFirstPoint(Lemniscate* l, int k)
+QPair<int,int> Drawer::getExtremePoint(Lemniscate* l, int k, int xEnd, int yEnd)
 {
     int x1 = l->getX1();
     int x2 = l->getX2();
     int y1 = l->getY1();
     int y2 = l->getY2();
 
-    int xEnd = x2 + (x2 - x1);
-    int yEnd = y2 + (y2 - y1);
+//    int xEnd = x2 + (x2 - x1);
+//    int yEnd = y2 + (y2 - y1);
 
     int xStart = x2;
     int yStart = y2;
@@ -114,7 +114,9 @@ void Drawer::drawLemniscate(QImage* image, Lemniscate* l)
     // 16*((x - x1)^2 + (y - y1)^2)((x - x2)^2 + (y - y2)^2) = ((x2 - x1)^2 + (y2 - y1)^2))^2
     int k = ((x2 - x1)*(x2 - x1) + (y2 - y1)*(y2 - y1))*((x2 - x1)*(x2 - x1) + (y2 - y1)*(y2 - y1));
 
-    QPair<int, int> firstPoint = getFirstPoint(l, k);
+//    QPair<int, int> firstPoint = getExtremePoint(l, k, x2, y2, x2 + (x2 - x1),  y2 + (y2 - y1));
+//    QPair<int, int> lastPoint = getExtremePoint(l, k, x1 + (x1 - x2),  y1 + (y1 - y2));
+
     int xCurr = firstPoint.first;
     int yCurr = firstPoint.second;
     drawPoint(image, xCurr, yCurr, blackColor);

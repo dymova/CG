@@ -25,11 +25,11 @@ void Lemniscate::read(const QJsonObject& jsonObject)
 
     QJsonValue focus1Value = jsonLemniscate[KEY_FOCUS1];
     checkValue(KEY_FOCUS1, focus1Value);
-    QJsonObject jsonFocus1= lemniscateValue.toObject();
+    QJsonObject jsonFocus1= focus1Value.toObject();
 
     QJsonValue focus2Value = jsonLemniscate[KEY_FOCUS2];
     checkValue(KEY_FOCUS2, focus2Value);
-    QJsonObject jsonFocus2= lemniscateValue.toObject();
+    QJsonObject jsonFocus2= focus2Value.toObject();
 
     QJsonValue x1Value = jsonFocus1[KEY_X];
     checkValue(KEY_X, x1Value);
