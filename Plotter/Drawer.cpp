@@ -9,17 +9,18 @@ QObject(parent)
 {
 }
 
-int Drawer::computeParam(int x, int y, Lemniscate* l) {
-    int x1 = l->getX1();
-    int x2 = l->getX2();
-    int y1 = l->getY1();
-    int y2 = l->getY2();
+long Drawer::computeParam(int x, int y, Lemniscate* l) {
+    long x1 = l->getX1();
+    long x2 = l->getX2();
+    long y1 = l->getY1();
+    long y2 = l->getY2();
 
     return ((x- x1)*(x - x1) + (y - y1)*(y - y1))*
            ((x - x2)*(x - x2) + (y - y2)*(y - y2)) << 4;
 }
 
-QPair<int,int> Drawer::getFirstPoint(Lemniscate* l, int k)
+//QPair<int,int> Drawer::getExtremePoint(Lemniscate* l, int k, int xEnd, int yEnd)
+QPair<int,int> Drawer::getFirstPoint(Lemniscate* l, long k)
 {
     int x1 = l->getX1();
     int x2 = l->getX2();
@@ -37,7 +38,7 @@ QPair<int,int> Drawer::getFirstPoint(Lemniscate* l, int k)
     int xMiddle;
     int yMiddle;
 
-    int param;
+    long param;
 
     int xFirstPoint;
     int yFirstPoint;
@@ -63,8 +64,8 @@ QPair<int,int> Drawer::getFirstPoint(Lemniscate* l, int k)
 
          if(xDelta <= 1 && yDelta <=1)
          {
-             int paramStart = computeParam(xStart, yStart, l);
-             int paramEnd = computeParam(xEnd, yEnd, l);
+             long paramStart = computeParam(xStart, yStart, l);
+             long paramEnd = computeParam(xEnd, yEnd, l);
 
              if(abs(paramStart - k) < abs(paramEnd - k))
              {
@@ -100,10 +101,10 @@ void Drawer::updateNeighborhood(QList<QPair<int, int> > &neighborhood, int xStar
 void Drawer::drawLemniscate(QImage* image, Lemniscate* l)
 {
     QColor blackColor(0, 0, 0);
-    int x1 = l->getX1();
-    int x2 = l->getX2();
-    int y1 = l->getY1();
-    int y2 = l->getY2();
+    long x1 = l->getX1();
+    long x2 = l->getX2();
+    long y1 = l->getY1();
+    long y2 = l->getY2();
 
 
     if (!image)
@@ -112,8 +113,10 @@ void Drawer::drawLemniscate(QImage* image, Lemniscate* l)
     }
 
     // 16*((x - x1)^2 + (y - y1)^2)((x - x2)^2 + (y - y2)^2) = ((x2 - x1)^2 + (y2 - y1)^2))^2
-    int k = ((x2 - x1)*(x2 - x1) + (y2 - y1)*(y2 - y1))*((x2 - x1)*(x2 - x1) + (y2 - y1)*(y2 - y1));
+    long k = ((x2 - x1)*(x2 - x1) + (y2 - y1)*(y2 - y1))*((x2 - x1)*(x2 - x1) + (y2 - y1)*(y2 - y1));
 
+//    QPair<int, int> firstPoint = getExtremePoint(l, k, x2, y2, x2 + (x2 - x1),  y2 + (y2 - y1));
+//    QPair<int, int> lastPoint = getExtremePoint(l, k, x1 + (x1 - x2),  y1 + (y1 - y2));
     QPair<int, int> firstPoint = getFirstPoint(l, k);
     int xCurr = firstPoint.first;
     int yCurr = firstPoint.second;
@@ -132,19 +135,23 @@ void Drawer::drawLemniscate(QImage* image, Lemniscate* l)
 
     int xPrev = neighborhood.first().first + xCurr;
     int yPrev = neighborhood.first().second + yCurr;
+    int position = 0;
 
-    while(true)//todo
+    while(true)
     {
-    int xPrevNeighbor = neighborhood.first().first;
-    int yPrevNeighbor = neighborhood.first().second;
+        int xPrevNeighbor = neighborhood.at(position).first;
+        int yPrevNeighbor = neighborhood.at(position).second;
+//        int xPrevNeighbor = neighborhood.first().first;
+//        int yPrevNeighbor = neighborhood.first().second;
 
-        for(QPair<int, int> point : neighborhood)
+        for(position; ; position++)
+//        for(QPair<int, int> point : neighborhood)
         {
-//            int xtmp = point.first;
-//            int ytmp = point.second;
+            position = (position + 8) % 8;
+            QPair<int, int> point = neighborhood.at(position);
 
-            int param1 = computeParam(xPrevNeighbor + xCurr, yPrevNeighbor + yCurr, l);
-            int param2 = computeParam(point.first + xCurr, point.second + yCurr, l);
+            long param1 = computeParam(xPrevNeighbor + xCurr, yPrevNeighbor + yCurr, l);
+            long param2 = computeParam(point.first + xCurr, point.second + yCurr, l);
 
              if((param1 <= k && param2 > k)
                 || (param1 > k && param2 <= k)
@@ -163,9 +170,11 @@ void Drawer::drawLemniscate(QImage* image, Lemniscate* l)
                   {
                       xCurr = xPrevNeighbor + xCurr;
                       yCurr = yPrevNeighbor + yCurr;
+
                   }
                   drawPoint(image, xCurr , yCurr, blackColor);
-                  updateNeighborhood(neighborhood, xPrev - xCurr, yPrev- yCurr);
+                  position = (position - 4 + 1 + 8) % 8;
+//                  updateNeighborhood(neighborhood, xPrev - xCurr, yPrev- yCurr);
                   break;
              }
 
