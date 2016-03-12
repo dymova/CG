@@ -3,14 +3,14 @@
 #include "ConfigParser.h"
 #include "ConsoleModeController.h"
 #include "GuiModeController.h"
-
+#include <QDebug>
 
 int main(int argc, char *argv[])
 {
 
 	QApplication a(argc, argv);
 	saveAndLoadConfig::ConfigParser parser;
-	if (argc >= 2)
+    if (argc > 2)
 	{
         QString pathToConfigFile(argv[1]);
         QString pathToOutputFile(argv[2]);

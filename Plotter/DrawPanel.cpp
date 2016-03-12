@@ -37,10 +37,10 @@ void DrawPanel::paintEvent(QPaintEvent*)
     memset(pubBuffer, whiteColor, backBuffer.byteCount());
 
     Lemniscate* l = config->getLemniscate();
+    drawer->drawLemniscate(&backBuffer, l);
     drawer->drawAxis(&backBuffer);
     drawer->drawFocus(&backBuffer, l->getX1(), l->getY1());
     drawer->drawFocus(&backBuffer, l->getX2(), l->getY2());
-    drawer->drawLemniscate(&backBuffer, l);
 
     painter.drawImage(0, 0, backBuffer);
 }
