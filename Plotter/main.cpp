@@ -7,9 +7,7 @@
 
 int main(int argc, char *argv[])
 {
-
 	QApplication a(argc, argv);
-	saveAndLoadConfig::ConfigParser parser;
     if (argc > 2)
 	{
         QString pathToConfigFile(argv[1]);

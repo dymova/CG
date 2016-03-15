@@ -5,6 +5,7 @@ TEMPLATE = app
 TARGET = CircleDrawer
 
 CONFIG += c++11
+CONFIG += console
 
 HEADERS += ./Lemniscate.h \
     ./ConfigParser.h \

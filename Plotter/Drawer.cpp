@@ -1,8 +1,8 @@
 #include "Drawer.h"
 #include <QImage>
 #include <QColor>
-#include <cmath>
-#include <limits.h>
+#include <stdlib.h>
+#include <QDebug>
 #include "Lemniscate.h"
 
 Drawer::Drawer(QObject *parent) :
@@ -24,21 +24,14 @@ long long Drawer::computeParam(long long x, long long y, Lemniscate* l) {
     long long y1 = l->getY1();
     long long y2 = l->getY2();
 
-    return (square(x- x1) + square(y - y1)) *
-           (square(x - x2) + square(y - y2)) << 4;
+    long long res = (square(x- x1) + square(y - y1)) *
+            (square(x - x2) + square(y - y2)) << 4;
+
+    return res;
 }
 
 QPair<int,int> Drawer::getExtremePoint(Lemniscate* l, long long k, int xStart, int yStart, int xEnd, int yEnd)
-//QPair<int,int> Drawer::getExtremePoint(Lemniscate* l, long k)
 {
-    int x1 = l->getX1();
-    int x2 = l->getX2();
-    int y1 = l->getY1();
-    int y2 = l->getY2();
-    int xSymmAxis = x1 - x2;
-    int ySymmAxis = y1 - y2;
-
-
     int xMiddle;
     int yMiddle;
 
@@ -46,14 +39,12 @@ QPair<int,int> Drawer::getExtremePoint(Lemniscate* l, long long k, int xStart, i
 
     int xFirstPoint;
     int yFirstPoint;
-    int direction;
 
     while(true)
     {
          xMiddle = (xStart + xEnd) >> 1;
          yMiddle = (yStart + yEnd) >> 1;
 
-         direction = xSymmAxis*(yMiddle - y2) - ySymmAxis*(xMiddle - x2);
          param = computeParam(xMiddle, yMiddle, l);
 
          if(param  < k) {
@@ -65,15 +56,15 @@ QPair<int,int> Drawer::getExtremePoint(Lemniscate* l, long long k, int xStart, i
              yEnd = yMiddle;
          }
 
-         int xDelta = abs(xStart - xEnd);
-         int yDelta = abs(yStart- yEnd);
+         int xDelta = llabs(xStart - xEnd);
+         int yDelta = llabs(yStart- yEnd);
 
          if(xDelta <= 1 && yDelta <=1)
          {
              long long paramStart = computeParam(xStart, yStart, l);
              long long paramEnd = computeParam(xEnd, yEnd, l);
 
-             if(abs(paramStart - k) < abs(paramEnd - k))
+             if( llabs(paramStart - k) < llabs(paramEnd - k))
              {
                  xFirstPoint = xStart;
                  yFirstPoint = yStart;
@@ -85,36 +76,6 @@ QPair<int,int> Drawer::getExtremePoint(Lemniscate* l, long long k, int xStart, i
          }
     }
     return qMakePair(xFirstPoint, yFirstPoint);
-}
-
-void Drawer::findCenter(QList<QPair<int, int> > &center, Lemniscate* l)
-{
-    int x1 = l->getX1();
-    int x2 = l->getX2();
-    int y1 = l->getY1();
-    int y2 = l->getY2();
-
-    int x = (x2 + x1) >> 1;
-    int y = (y2 + y1) >> 1;
-
-    if((x2 + x1) % 2 == 0 && (y2 + y1) % 2 == 0)
-    {
-        center.append(qMakePair(x, y));
-    }
-    else
-    {
-        if ((y2 + y1) % 2 != 0)
-        {
-            center.append(qMakePair(x, y+1));
-            center.append(qMakePair(x, y));
-        }
-        if((x2 + x1) % 2 != 0)
-        {
-            center.append(qMakePair(x+1, y+1));
-            center.append(qMakePair(x+1, y));
-        }
-    }
-
 }
 
 int Drawer::getSecondPoint(Lemniscate* l, long long k, int &yCurr, int &xCurr, bool rightDirection)
@@ -132,18 +93,18 @@ int Drawer::getSecondPoint(Lemniscate* l, long long k, int &yCurr, int &xCurr, b
     int yPrevNeighbor = neighborhood.first().second;
     for(int position = 0; ; position += delta)
     {
-        position = (position + 8) % 8; //todo % to << and -
+        position = (position + 8) % 8;
         QPair<int, int> point = neighborhood.at(position);
 
-        long param1 = computeParam(xPrevNeighbor + xCurr, yPrevNeighbor + yCurr, l);
-        long param2 = computeParam(point.first + xCurr, point.second + yCurr, l);
+        long long param1 = computeParam(xPrevNeighbor + xCurr, yPrevNeighbor + yCurr, l);
+        long long param2 = computeParam(point.first + xCurr, point.second + yCurr, l);
 
          if((param1 <= k && param2 > k)
             || (param1 > k && param2 <= k)
              || (param1 < k && param2 >= k)
              || (param1 >= k && param2 < k))
          {
-                  if(abs(param2 - k) < abs(param1 - k)) {
+                  if(llabs(param2 - k) < llabs(param1 - k)) {
                       xCurr = point.first + xCurr;
                       yCurr = point.second + yCurr;
 
@@ -163,63 +124,21 @@ int Drawer::getSecondPoint(Lemniscate* l, long long k, int &yCurr, int &xCurr, b
     }
 }
 
-bool Drawer::isCenter(int xCurr, int yCurr, QList<QPair<int, int>> center)
-{
-    for(QPair<int, int> point : center)
-    {
-        if(xCurr == point.first && yCurr == point.second)
-        {
-            return true;
-        }
-    }
-    return false;
-}
-
 void Drawer::drawSide(QPair<int, int> firstPoint, QPair<int, int> lastPoint,
-                      Lemniscate* l, long long k, QList<QPair<int, int>> center, QImage* image, int position,  QPair<int, int> currPoint)
+                      Lemniscate* l, long long k, QImage* image, int position,  QPair<int, int> currPoint)
 {
     QColor blackColor(0, 0, 0);
-    long long x1 = l->getX1();
-    long long x2 = l->getX2();
-    long long y1 = l->getY1();
-    long long y2 = l->getY2();
 
-    int xCurr = currPoint.first;
-    int yCurr = currPoint.second;
+    long long xCurr = currPoint.first;
+    long long yCurr = currPoint.second;
     int count = 0;
 
+    long long xSymmAxis = firstPoint.first - lastPoint.first;
+    long long ySymmAxis = firstPoint.second - lastPoint.second;
 
-    bool isEnded  = false;
-    if(isCenter(xCurr, yCurr, center))
-    {
-        return;
-    }
-
-    int xSymmAxis = firstPoint.first - lastPoint.first;
-    int ySymmAxis = firstPoint.second - lastPoint.second;
-
-//    for(int y = -image->height()/2; y < image->height()/2; y++)
-//    {
-//        for(int x = -(image->width()/2); x < image->width()/2; x++)
-//        {
-//            int k = xSymmAxis*(y - lastPoint.second) - ySymmAxis*(x - lastPoint.first);
-////            int k = xSymmAxis*(y - y2) - ySymmAxis*(x - x2);
-//            if(k >= 0)
-//            {
-//                drawPoint(image, x, y, QColor(50, 0,0));
-//            }
-//            else
-//            {
-//                drawPoint(image, x, y, QColor(0, 50,0));
-//            }
-//        }
-//    }
-//    drawFocus(image, firstPoint.first, firstPoint.second);
-//    drawFocus(image, lastPoint.first, lastPoint.second);
-
-    int prevDirection = xSymmAxis*(yCurr - lastPoint.second) - ySymmAxis*(xCurr - lastPoint.first);
-    int direction;
-    while(!isEnded)
+    long long prevDirection = xSymmAxis*(yCurr - lastPoint.second) - ySymmAxis*(xCurr - lastPoint.first);
+    long long direction;
+    while(true)
     {
         int pos1 = (position - 1 + 8) % 8;
         int pos3 = (position + 1 + 8) % 8;
@@ -227,9 +146,9 @@ void Drawer::drawSide(QPair<int, int> firstPoint, QPair<int, int> lastPoint,
         QPair<int, int> point2 = neighborhood.at(position);
         QPair<int, int> point3 = neighborhood.at(pos3);
 
-        long long param1 = abs(computeParam(point1.first + xCurr, point1.second + yCurr, l) - k);
-        long long param2 = abs(computeParam(point2.first + xCurr, point2.second + yCurr, l) - k);
-        long long param3 = abs(computeParam(point3.first + xCurr, point3.second + yCurr, l) - k );
+        long long param1 = llabs(computeParam(point1.first + xCurr, point1.second + yCurr, l) - k);
+        long long param2 = llabs(computeParam(point2.first + xCurr, point2.second + yCurr, l) - k);
+        long long param3 = llabs(computeParam(point3.first + xCurr, point3.second + yCurr, l) - k );
 
         long long minParam = min(param1, param2, param3);
 
@@ -254,21 +173,9 @@ void Drawer::drawSide(QPair<int, int> firstPoint, QPair<int, int> lastPoint,
         direction = xSymmAxis*(yCurr - lastPoint.second) - ySymmAxis*(xCurr - lastPoint.first);
         count++;
 
-//        if(count == 7000)
-//        {
-//            break;
-//        }
-        if(isCenter(xCurr, yCurr, center))
-        {
-            break;
-        }
 
-        if (!(
-                    prevDirection > 0 && direction > 0
-                || prevDirection < 0 && direction < 0
-//                prevDirection >= 0 && direction >= 0
-//                || prevDirection <= 0 && direction <= 0
-                || count == 1)) //todo
+        if ((prevDirection <= 0 || direction <= 0)
+              && (prevDirection >= 0 || direction >= 0))
         {
             break;
         }
@@ -295,35 +202,40 @@ void Drawer::drawLemniscate(QImage* image, Lemniscate* l)
     QPair<int, int> firstPoint = getExtremePoint(l, k, x2, y2, x2 + (x2 - x1),  y2 + (y2 - y1));
     QPair<int, int> lastPoint = getExtremePoint(l, k, x1 ,y1,x1 + (x1 - x2),  y1 + (y1 - y2));
 
-    QList<QPair<int, int>> center;
-    findCenter(center, l);
+    drawPoint(image, firstPoint.first, firstPoint.second, blackColor);
+    drawPoint(image, lastPoint.first, lastPoint.second, blackColor);
 
-    int xCurr = firstPoint.first;
-    int yCurr = firstPoint.second;
-    drawPoint(image, xCurr, yCurr, blackColor);
-    if(isCenter(xCurr, yCurr, center))
-    {
+    long long distanceX = abs(firstPoint.first + lastPoint.first) >> 2;
+    long long distanceY = abs(firstPoint.second + lastPoint.second) >> 2;
+    if(distanceX <= 0 && distanceY <= 0){
         return;
     }
 
+    int xCurr = firstPoint.first;
+    int yCurr = firstPoint.second;
+
     int position = getSecondPoint( l,  k, yCurr, xCurr, true);
     drawPoint(image, xCurr , yCurr, blackColor);
-    drawSide(firstPoint, lastPoint, l, k, center, image, position, qMakePair(xCurr, yCurr));
+    drawSide(firstPoint, lastPoint, l, k, image, position, qMakePair(xCurr, yCurr));
+
+
     xCurr = firstPoint.first;
     yCurr = firstPoint.second;
     position = getSecondPoint(l,  k, yCurr, xCurr, false);
     drawPoint(image, xCurr , yCurr, blackColor);
-    drawSide(firstPoint, lastPoint, l, k, center, image, position, qMakePair(xCurr, yCurr));
+    drawSide(firstPoint, lastPoint, l, k, image, position, qMakePair(xCurr, yCurr));
+
     xCurr = lastPoint.first;
     yCurr = lastPoint.second;
-    position = getSecondPoint(l,  k, yCurr, xCurr, true); //понять почему не всегда меняется направление
+    position = getSecondPoint(l,  k, yCurr, xCurr, true);
     drawPoint(image, xCurr , yCurr, blackColor);
-    drawSide(lastPoint, firstPoint, l, k, center, image, position, qMakePair(xCurr, yCurr));
+    drawSide(lastPoint, firstPoint, l, k, image, position, qMakePair(xCurr, yCurr));
+
     xCurr = lastPoint.first;
     yCurr = lastPoint.second;
     position = getSecondPoint(l,  k, yCurr, xCurr, false);
     drawPoint(image, xCurr , yCurr, blackColor);
-    drawSide(lastPoint, firstPoint, l, k, center, image, position, qMakePair(xCurr, yCurr));
+    drawSide(lastPoint, firstPoint, l, k, image, position, qMakePair(xCurr, yCurr));
 
 }
 
@@ -346,7 +258,7 @@ void Drawer::drawFocus(QImage *image, int x0, int y0)
             y1 = 1 - (image->height()/2);
         }
 
-        for (y1; y1 <= y2; y1++)
+        for (; y1 <= y2; y1++)
         {
             int bound = (int)(sqrt((double)(r*r - (y1 - y0) * (y1 - y0))));
             int x1 = -bound + x0;
@@ -360,7 +272,7 @@ void Drawer::drawFocus(QImage *image, int x0, int y0)
                 x2 = (image->width() / 2) - 1;
             }
 
-            for (x1; x1<=x2; x1++)
+            for (; x1<=x2; x1++)
             {
                 drawPoint(image, x1, y1, blackColor);
             }
@@ -409,7 +321,7 @@ long long Drawer::square(long long x)
     return x*x;
 }
 
-long long Drawer::min(int a, int b, int c)
+long long Drawer::min(long long a, long long b, long long c)
 {
     if(a <= b && a <= c)
     {
