@@ -22,11 +22,12 @@ public:
 
     const int DEFAULT_WIDTH = 300;
     const int DEFAULT_HEIGHT = 300;
-    const int DEFAULT_X = 10;
-    const int DEFAULT_Y = 10;
+    const int DEFAULT_X = 0;
+    const int DEFAULT_Y = 0;
     const int DEFAULT_SCALE = 0;
+//    const int DEFAULT_SCALE = 155;
     const bool DEFAULT_FILL = false;
-    const bool DEFAULT_OUTLINE = false;
+    const bool DEFAULT_OUTLINE = true;
 
 
 private:

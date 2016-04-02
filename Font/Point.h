@@ -6,8 +6,8 @@
 class Point
 {
 private:
-    int x;
-    int y;
+    double x;
+    double y;
     bool oncurve;
 
     const QString KEY_X = "x";
@@ -16,10 +16,15 @@ private:
     const QString KEY_ONCURVE = "oncurve";
 public:
     Point();
-    Point(int x, int y, bool oncurve);
+    Point(double x, double y, bool oncurve);
 
     void read(const QJsonObject &json);
     void write(QJsonObject &json) const;
+    double getX() const;
+    double getY() const;
+    bool isOncurve() const;
+    void setX(double value);
+    void setY(double value);
 };
 
 #endif // POINT_H

@@ -104,12 +104,34 @@ void Configuration::read(const QJsonObject &json)
     }
     QJsonArray figuresArray = glyphsValue.toArray();
 
-    Figure* figure = new Figure();
+    figure = new Figure();
     figure->read(figuresArray.first().toObject());
 
-    Panel* panel = new Panel();
+    panel = new Panel();
     panel->read(json);
 
+}
+
+void Configuration::write(QJsonObject &json) const
+{
+    QJsonObject positionObj;
+    positionObj[KEY_X] = positionX;
+    positionObj[KEY_Y] = positionY;
+    json[KEY_POSITION] = positionObj;
+
+    json[KEY_SCALE] = scale;
+    json[KEY_FILL] = fill;
+    json[KEY_OUTLINE] = outline;
+
+    QJsonObject figureObj;
+    figure->write(figureObj);
+    QJsonArray glyphsArray;
+    glyphsArray.append(figureObj);
+    json[KEY_GLYPHS] = glyphsArray;
+
+    QJsonObject panelObj;
+    panel->write(panelObj);
+    json[KEY_PANEL] = panelObj;
 }
 
 Figure* Configuration::getFigure() const

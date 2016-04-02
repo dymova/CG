@@ -3,6 +3,7 @@
 #include "ConfigParser.h"
 #include <iostream>
 #include <QImage>
+#include <QColor>
 #include "JsonParserException.h"
 
 
@@ -21,7 +22,6 @@ void ConsoleModeController::run(QString pathToConfigFile, QString pathToOutputFi
 	{
         Configuration* config = parser.parse(pathToConfigFile);
 		Drawer drawer;
-        Figure* figure = config->getFigure();
         int width = config->getPanel()->getWidth();
         int height = config->getPanel()->getHeight();
         QImage* image = new QImage(width, height, QImage::Format_RGB888);
@@ -29,9 +29,12 @@ void ConsoleModeController::run(QString pathToConfigFile, QString pathToOutputFi
 		const int whiteColorValue = 255;
 		memset(image->bits(), whiteColorValue, image->byteCount());
 
+        QColor black(0, 0, 0);
         //todo fill, scale and etc.
-        drawer.drawFigure(image, figure);
-
+        if(config->isOutline())
+        {
+            drawer.drawOutline(image, config, black);
+        }
 
         if (!image->save(pathToOutputFile))
 		{

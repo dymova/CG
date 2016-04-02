@@ -7,7 +7,7 @@ namespace saveAndLoadConfig
 	class Serializer
 	{
     private:
-        const QString KEY_LEMNISCATE= "lemniscate";
+        const QString KEY_GLYPHS= "glyphs";
         const QString KEY_PANEL = "panel";
 
 	public:

@@ -1,12 +1,38 @@
 #include "Point.h"
 #include "Utils.h"
 
-Point::Point()
+double Point::getX() const
 {
-
+    return x;
 }
 
-Point::Point(int x, int y, bool oncurve) : x(x), y(y), oncurve(oncurve)
+double Point::getY() const
+{
+    return y;
+}
+
+bool Point::isOncurve() const
+{
+    return oncurve;
+}
+
+
+void Point::setX(double value)
+{
+    x = value;
+}
+
+void Point::setY(double value)
+{
+    y = value;
+}
+
+Point::Point()
+{
+    
+}
+
+Point::Point(double x, double y, bool oncurve) : x(x), y(y), oncurve(oncurve)
 {
 }
 

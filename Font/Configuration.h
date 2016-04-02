@@ -21,6 +21,7 @@ private:
     const QString KEY_FILL = "fill";
     const QString KEY_OUTLINE = "outline";
     const QString KEY_GLYPHS = "glyphs";
+    const QString KEY_PANEL = "panel";
 
 public:
     Configuration();

@@ -18,15 +18,8 @@ namespace saveAndLoadConfig
 
 	void Serializer::serialize(QString file, Configuration* config)
 	{
-        Figure* lemniscate = config->getFigure();
-        QJsonObject lemniscateObj;
-        lemniscate->write(lemniscateObj);
-		QJsonObject jsonObject;
-        jsonObject[KEY_LEMNISCATE] = lemniscateObj;
-
-		QJsonObject panelObj;
-		config->getPanel()->write(panelObj);
-		jsonObject[KEY_PANEL] = panelObj;
+        QJsonObject jsonObject;
+        config->write(jsonObject);
 
 		QJsonDocument jsonDocument(jsonObject);
 		QFile jsonFile(file);

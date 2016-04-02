@@ -25,9 +25,12 @@ void GuiModeController::run()
 	try
 	{
         QList<Point*> defaultPointsList;
-        defaultPointsList.append(new Point(0, -5, true));
-        defaultPointsList.append(new Point(5, 5, false));
-        defaultPointsList.append(new Point(10, -5, true));
+        defaultPointsList.append(new Point(0, 0, true));
+        defaultPointsList.append(new Point(127.49999999999999, 127.49999999999999, false));
+        defaultPointsList.append(new Point(254.99999999999997, 0, true));
+//        defaultPointsList.append(new Point(0, 0, true));
+//        defaultPointsList.append(new Point(50, 50, false));
+//        defaultPointsList.append(new Point(100, 0, true));
 
         Figure* defaultFigure= new Figure(defaultPointsList);
         config = new Configuration(defaultFigure, new Panel(DEFAULT_HEIGHT, DEFAULT_WIDTH),
@@ -66,8 +69,9 @@ void GuiModeController::initControllersPanel(QGroupBox*& controlsPanel)
     yControl = new ControlPanel("Y", XY_MIN, XY_MAX, y);
     scaleControl = new ControlPanel("Scale", SCALE_MIN, SCALE_MAX, scale);
     fillCheckBox = new QCheckBox("Fill", controlsPanel);
+    fillCheckBox->setCheckState(config->isFill() ? Qt::Checked : Qt::Unchecked);
     outlineCheckBox = new QCheckBox("Outline", controlsPanel);
-
+    outlineCheckBox->setCheckState(config->isOutline() ? Qt::Checked : Qt::Unchecked);
 
     controlsLayout->addWidget(xControl);
     controlsLayout->addWidget(yControl);
@@ -105,7 +109,6 @@ void GuiModeController::open(QString str)
                              : fillCheckBox->setCheckState(Qt::Unchecked);
             config->isOutline() ? outlineCheckBox->setCheckState(Qt::Checked)
                                 : outlineCheckBox->setCheckState(Qt::Unchecked);
-
 		}
 		catch (JsonParserException& exception)
 		{
