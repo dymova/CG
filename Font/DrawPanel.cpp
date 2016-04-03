@@ -40,12 +40,18 @@ void DrawPanel::paintEvent(QPaintEvent* )
     memset(pubBuffer, whiteColor, image.byteCount());
 
     QColor black(0, 0, 0);
+    QColor blue(0, 77, 255);
 
     drawer->drawAxis(&image);
 
     if(config->isOutline())
     {
         drawer->drawOutline(&image, config, black);
+    }
+
+    if(config->isFill())
+    {
+        drawer->drawFill(&image, config, blue);
     }
 
     painter.drawImage(0, 0, image);

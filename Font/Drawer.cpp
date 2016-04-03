@@ -15,28 +15,23 @@ QObject(parent)
 
 void Drawer::drawOutline(QImage* image, Configuration* config, QColor color)
 {
-    int centerX = config->getPositionX();
-    int centerY = config->getPositionY();
     Figure* figure = config->getFigure();
-    QList<Point *> points =  scaleCoordinates(figure->getPoints(), config->getScale());
+    QList<Point *> points =  transformCoordinates(figure->getPoints(), config);
     Point* prev = points.first();
     int len = points.length();
     for(int i = 1; i <= len; i++)
     {
-        Point* curr = points.at((i + len) % len);
+        Point* curr = points.at((i + len) % len); //for connect last and first point
         if(!prev->isOncurve() && !curr->isOncurve())
         {
             throw IncorrectConfigFileException("outline shold be closed");
         }
-        if(prev->isOncurve() && curr->isOncurve())
+
+        if(isLine(prev, curr))
         {
-            double x0 = prev->getX() + centerX;
-            double y0 = prev->getY() + centerY;
-            double x1 = curr->getX() + centerX;
-            double y1 = curr->getY() + centerY;
-            drawLine(image, x0, y0, x1, y1, color);
+            drawLine(image, prev->getX(), prev->getY(), curr->getX(), curr->getY(), color);
         }
-        else if(!prev->isOncurve() && curr->isOncurve())
+        else if(isCurve(prev, curr))
         {
             Point* firstOncurve = points.at((i - 2 + len) % len);
             if(!firstOncurve->isOncurve()){
@@ -45,6 +40,157 @@ void Drawer::drawOutline(QImage* image, Configuration* config, QColor color)
             drawBezierCurve(image, config, firstOncurve, prev, curr, color);
         }
         prev = curr;
+    }
+}
+bool Drawer::isLine(Point* prev, Point* curr){
+    return prev->isOncurve() && curr->isOncurve();
+}
+bool Drawer::isCurve(Point* prev, Point* curr){
+    return !prev->isOncurve() && curr->isOncurve();
+}
+
+QPair<double, double> Drawer::findYLimits(QList<Point *> points)
+{
+    double maxY = points.first()->getY();
+    double minY = maxY;
+
+    for(Point* p : points)
+    {
+        if(p->getY() < minY)
+        {
+            minY = p->getY();
+        }
+        if(p->getY() > maxY)
+        {
+            maxY = p->getY();
+        }
+    }
+    return qMakePair(minY, maxY);
+}
+
+void Drawer::computeCrossPointWithLine(Point *prev, Point *curr, int y0, QList<Point *>& crossPoints)
+{
+    double x1 = prev->getX();
+    double y1 = prev->getY();
+    double x2 = curr->getX();
+    double y2 = curr->getY();
+
+    //line1: ax+by+c=0
+    double a = y2 - y1;
+    double b = x1 - x2;
+    double c = y1*(x2-x1) - x1*(y2-y1);
+    //line2: y = y0 -> 0x+1y-y0=0
+    //det = -b1*a2+b2*a1 = -b*0 + 1*a = a
+
+    if(a != 0) // crosspoint exist
+    {
+        double x = (-b*y0 - c) / a;
+        if((x1 <= x && x <= x2)
+            || (x2 <= x && x <= x1))
+        {
+            crossPoints.append(new Point(x,y0, true));
+        }
+    }
+    else
+    {
+        //c2 == k*c1 => ||
+        if(c == 0) {
+            crossPoints.append(curr);
+        }
+
+    }
+}
+
+void Drawer::computeCrossPointWithCurve(Point *p0, Point *p1, Point *p2, int y, QList<Point *> &crossPoints)
+{
+    double p0y = p0->getY();
+    double p1y = p1->getY();
+    double p2y = p2->getY();
+
+    double a = (p0y - 2*p1y + p2y);
+    double t1;
+    double t2;
+    if(a != 0){
+        double d = a*y + p1y*p1y - p0y*p2y;
+        if(d < 0) {
+            return;
+        }
+        t1 = (p0y - p1y + sqrt(d)) / a;
+        t2 = (p0y - p1y - sqrt(d)) / a;
+    }
+    else {
+        t1 = (y - p0y) / (2*p1y - 2*p0y);
+        t2 = t1;
+    }
+
+
+    Point* point1 = getPointOnCurve(p0, p1, p2, t1);
+    Point* point2 = getPointOnCurve(p0, p1, p2, t2);
+    double x1 = point1->getX();
+    double x2 = point2->getX();
+
+
+    if(p0->getX() == x1){
+        crossPoints.append(new Point(x2, y, true));
+    }
+    else
+    {
+        crossPoints.append(new Point(x1, y, true));
+        crossPoints.append(new Point(x2, y, true));
+    }
+
+
+}
+
+void Drawer::drawFill(QImage *image, Configuration *config, QColor color)
+{
+    Figure* figure = config->getFigure();
+    QList<Point *> points =  transformCoordinates(figure->getPoints(), config);
+    QPair<double, double> limitsY = findYLimits(points);
+    QList<Point *>  crossPoints;
+    for(int y = limitsY.first; y < limitsY.second; y++){
+        if(y == 30){
+            int k = 1234;
+        }
+
+        Point* prev = points.first();
+        int len = points.length();
+        for(int i = 1; i <= len; i++)
+        {
+            Point* curr = points.at((i + len) % len); //for connect last and first point
+            if(!prev->isOncurve() && !curr->isOncurve())
+            {
+                throw IncorrectConfigFileException("outline shold be closed");
+            }
+
+            if(isLine(prev, curr))
+            {
+                computeCrossPointWithLine(prev, curr, y, crossPoints);
+            }
+            else if(isCurve(prev, curr))
+            {
+                Point* firstOncurve = points.at((i - 2 + len) % len);
+                if(!firstOncurve->isOncurve()){
+                    throw IncorrectConfigFileException("outline shold be closed");
+                }
+                computeCrossPointWithCurve(firstOncurve, prev, curr, y, crossPoints);
+//                drawBezierCurve(image, config, firstOncurve, prev, curr, color);
+            }
+            prev = curr;
+        }
+        for(int i = 0; i < crossPoints.length(); i++)
+        {
+            if(i % 2 != 0) {
+                Point* p0 = crossPoints.at(i - 1);
+                Point* p1 = crossPoints.at(i);
+                int x1 = p0->getX() < p1->getX() ? p0->getX() : p1->getX();
+                int x2 = p0->getX() > p1->getX() ? p0->getX() : p1->getX();
+                for(int x = x1; x != x2; x++){
+                    drawPoint(image, x, y, color);
+                }
+            }
+        }
+        crossPoints.clear();
     }
 }
 
@@ -155,15 +301,9 @@ void Drawer::drawLine(QImage *image, double x0, double y0, double x1, double y1,
 
 void Drawer::drawBezierCurve(QImage *image, Configuration* config, Point *p0, Point *p1, Point *p2, QColor color)
 {
-    static int count = 0;
-    count++;
-    int centerX = config->getPositionX();
-    int centerY = config->getPositionY();
     Point* middlePoint = getPointOnCurve(p0, p1, p2, 0.5);
     double distToLine = distanceToLine(middlePoint, p0, p2);
-    if(count == 128) {
-        int tmp = 9;
-    }
+
     if(distToLine > ERROR)
     {
         drawBezierCurve(image, config, middlePoint, getNewNonOncurvePoint(p1, p2), p2, color);
@@ -171,14 +311,8 @@ void Drawer::drawBezierCurve(QImage *image, Configuration* config, Point *p0, Po
     }
     else
     {
-        double x0 = p0->getX() + centerX;
-        double y0 = p0->getY() + centerY;
-        double x1 = p1->getX() + centerX;
-        double y1 = p1->getY() + centerY;
-        double x2 = p2->getX() + centerX;
-        double y2 = p2->getY() + centerY;
-        drawLine(image, x0, y0, x1, y1, color);
-        drawLine(image, x1, y1, x2, y2, color);
+        drawLine(image, p0->getX(), p0->getY(), p1->getX(), p1->getY(), color);
+        drawLine(image, p1->getX(), p1->getY(), p2->getX(), p2->getY(), color);
     }
 }
 
@@ -213,8 +347,9 @@ Point *Drawer::getNewNonOncurvePoint(Point *p0, Point *p1)
     return new Point(x, y, false);
 }
 
-QList<Point *> Drawer::scaleCoordinates(QList<Point *> points, double scale)
+QList<Point *> Drawer::transformCoordinates(QList<Point *> points, Configuration* config)
 {
+    double scale = config->getScale();
     double k;
     QList<Point *> res;
     for(Point* p : points) {
@@ -227,7 +362,9 @@ QList<Point *> Drawer::scaleCoordinates(QList<Point *> points, double scale)
         {
             k = 1 + (scale / 100);
         }
-        res.append(new Point(x*k, y*k, p->isOncurve()));
+        res.append(new Point((x + config->getPositionX())*k,
+                             (y + config->getPositionY())*k,
+                             p->isOncurve()));
     }
     return res;
 }

@@ -12,11 +12,18 @@ private:
     Point* getPointOnCurve(Point *p0, Point *p1, Point *p2, double t);
     double distanceToLine(Point* point, Point * onLinePoint1, Point *onLinePoint2);
     Point* getNewNonOncurvePoint(Point* p0, Point* p1);
-    QList<Point *> scaleCoordinates(QList<Point *> points, double scale);
+//    QList<Point *> scaleCoordinates(QList<Point *> points, double scale);
+    QList<Point *> transformCoordinates(QList<Point *> points, Configuration* config);
+    bool isLine(Point* prev, Point* curr);
+    bool isCurve(Point* prev, Point* curr);
+    QPair<double, double> findYLimits(QList<Point *> points);
+    void computeCrossPointWithLine(Point* prev, Point* curr, int y, QList<Point *>& crossPoints);
+    void computeCrossPointWithCurve(Point *p0, Point *p1, Point *p2, int y, QList<Point *> &crossPoints);
 
 public:
 	Drawer(QObject *parent = 0);
     void drawOutline(QImage* pBackBuffer, Configuration* config, QColor color);
+    void drawFill(QImage* pBackBuffer, Configuration* config, QColor color);
     void drawFocus(QImage* pBackBuffer, int y0, int x0);
     void drawAxis(QImage* pBackBuffer);
 	void drawPoint(QImage* image, int x, int y, QColor c);

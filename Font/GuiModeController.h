@@ -28,7 +28,7 @@ public:
     const int DEFAULT_Y = 0;
     const int DEFAULT_SCALE = 0;
 //    const int DEFAULT_SCALE = 155;
-    const bool DEFAULT_FILL = false;
+    const bool DEFAULT_FILL = true;
     const bool DEFAULT_OUTLINE = true;
 
 
