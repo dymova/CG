@@ -1,10 +1,12 @@
 #pragma once
 #include "ConfigParser.h"
 #include "Serializer.h"
-#include "DrawPanel.h"
+//#include "DrawPanel.h"
 #include "ControlPanel.h"
 #include "MainWindow.h"
 #include <QCheckBox>
+
+//class DrawPanel;
 
 class GuiModeController : QObject
 {

@@ -1,14 +1,18 @@
 #include "DrawPanel.h"
 #include <QPainter>
+#include <QMouseEvent>
+#include <QApplication>
+#include <QDebug>
 #include "Figure.h"
 #include "ConfigParser.h"
+#include "GuiModeController.h"
 
 
-DrawPanel::DrawPanel(Configuration* c)
+DrawPanel::DrawPanel(Configuration* c, GuiModeController* controller)
 {
 	config = c;
     drawer = new Drawer(this);
-
+    this->controller = controller;
 }
 
 DrawPanel::~DrawPanel()
@@ -21,7 +25,7 @@ void DrawPanel::setConfig(Configuration* config)
 }
 
 
-void DrawPanel::paintEvent(QPaintEvent*)
+void DrawPanel::paintEvent(QPaintEvent* )
 {
     QPainter painter(this);
     QImage image(width(), height(), QImage::Format_RGB888);
@@ -37,8 +41,6 @@ void DrawPanel::paintEvent(QPaintEvent*)
 
     QColor black(0, 0, 0);
 
-    Figure* figure = config->getFigure();
-
     drawer->drawAxis(&image);
 
     if(config->isOutline())
@@ -48,4 +50,29 @@ void DrawPanel::paintEvent(QPaintEvent*)
 
     painter.drawImage(0, 0, image);
 }
+
+void DrawPanel::mousePressEvent(QMouseEvent* event)
+{
+
+    dragStartPosition = event->pos();
+}
+
+void DrawPanel::mouseMoveEvent(QMouseEvent* event)
+{
+    QPoint diff = event->pos() - dragStartPosition;
+    qDebug() << "press" << dragStartPosition.x() << dragStartPosition.y();
+    qDebug() << "move" << event->pos().x() << event->pos().y();
+
+    if (diff.manhattanLength() >= QApplication::startDragDistance())
+    {
+        int x = config->getPositionX();
+        int y = config->getPositionY();
+
+        controller->setXValue(x + diff.x());
+        controller->setYValue(y - diff.y());
+        dragStartPosition = event->pos();
+
+    }
+}
+
 

@@ -38,7 +38,7 @@ void GuiModeController::run()
                                    DEFAULT_SCALE, DEFAULT_FILL, DEFAULT_OUTLINE);
 		serializer = new saveAndLoadConfig::Serializer();
 
-		drawPanel = new DrawPanel(config);
+        drawPanel = new DrawPanel(config, this);
 		QGroupBox* controlsPanel;
 		initControllersPanel(controlsPanel);
 
@@ -137,12 +137,14 @@ void GuiModeController::save(QString str) const
 void GuiModeController::setXValue(int x)
 {
     config->setPositionX(x);
+    xControl->setValue(config->getPositionX());
 	drawPanel->update();
 }
 
 void GuiModeController::setYValue(int y)
 {
     config->setPositionY(y);
+    yControl->setValue(config->getPositionY());
 	drawPanel->update();
 }
 

@@ -145,12 +145,10 @@ void Drawer::drawLine(QImage *image, double x0, double y0, double x1, double y1,
        if(error2 > -deltaY) {
            error -= deltaY;
            x0 += signX;
-//           x0 = round(x0);
        }
        if(error2 < deltaX) {
            error += deltaX;
            y0 += signY;
-//           y0 = round(y0);
        }
     }
 }
@@ -163,7 +161,6 @@ void Drawer::drawBezierCurve(QImage *image, Configuration* config, Point *p0, Po
     int centerY = config->getPositionY();
     Point* middlePoint = getPointOnCurve(p0, p1, p2, 0.5);
     double distToLine = distanceToLine(middlePoint, p0, p2);
-    qDebug() << count << distToLine << p0->getX() << p0->getY() << p1->getX() << p1->getY() << p2->getX() << p2->getY();
     if(count == 128) {
         int tmp = 9;
     }
