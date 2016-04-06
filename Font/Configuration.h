@@ -23,6 +23,8 @@ private:
     const QString KEY_GLYPHS = "glyphs";
     const QString KEY_PANEL = "panel";
 
+
+
 public:
     Configuration();
     Configuration(Figure* f, Panel* p, int x, int y, int scale, bool fill, bool outline);

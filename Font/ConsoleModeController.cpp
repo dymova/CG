@@ -30,10 +30,18 @@ void ConsoleModeController::run(QString pathToConfigFile, QString pathToOutputFi
 		memset(image->bits(), whiteColorValue, image->byteCount());
 
         QColor black(0, 0, 0);
-        //todo fill, scale and etc.
+        QColor blue(0, 77, 255);
+
+        drawer.drawAxis(image);
+
         if(config->isOutline())
         {
             drawer.drawOutline(image, config, black);
+        }
+
+        if(config->isFill())
+        {
+            drawer.drawFill(image, config, blue);
         }
 
         if (!image->save(pathToOutputFile))

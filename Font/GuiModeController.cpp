@@ -25,9 +25,29 @@ void GuiModeController::run()
 	try
 	{
         QList<Point*> defaultPointsList;
+//        defaultPointsList.append(new Point(30, 60, true));
+//        defaultPointsList.append(new Point(0, 0, false));
+//        defaultPointsList.append(new Point(40, 60, true));
+//        defaultPointsList.append(new Point(40, 30, true));
+//        defaultPointsList.append(new Point(30, 30, true));
+
+//        defaultPointsList.append(new Point(0, 0, true));
+//        defaultPointsList.append(new Point(10, 50, false));
+//        defaultPointsList.append(new Point(30, 10, true));
+//        defaultPointsList.append(new Point(20, 10, true));
+//        defaultPointsList.append(new Point(40, 50, false));
+//        defaultPointsList.append(new Point(50, 0, true));
+
         defaultPointsList.append(new Point(0, 0, true));
-        defaultPointsList.append(new Point(50, 50, false));
-        defaultPointsList.append(new Point(100, 0, true));
+        defaultPointsList.append(new Point(10, 0, true));
+        defaultPointsList.append(new Point(20, -40, false));
+        defaultPointsList.append(new Point(30, 0, true));
+        defaultPointsList.append(new Point(40, 0, true));
+        defaultPointsList.append(new Point(20, -60, false));
+
+//        defaultPointsList.append(new Point(0, 0, true));
+//        defaultPointsList.append(new Point(50, 50, false));
+//        defaultPointsList.append(new Point(100, 0, true));
 
         Figure* defaultFigure= new Figure(defaultPointsList);
         config = new Configuration(defaultFigure, new Panel(DEFAULT_HEIGHT, DEFAULT_WIDTH),

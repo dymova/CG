@@ -12,6 +12,9 @@ private:
     const QString KEY_PANEL = "panel";
     const QString KEY_SIZE = "size";
 
+    const int DEFAULT_WIDTH = 300;
+    const int DEFAULT_HEIGHT = 300;
+
 
 public:
 	Panel();

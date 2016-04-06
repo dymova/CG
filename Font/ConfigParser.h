@@ -5,6 +5,7 @@ namespace saveAndLoadConfig
 {
 	class ConfigParser
 	{
+
 	public:
 		ConfigParser();
 		~ConfigParser();

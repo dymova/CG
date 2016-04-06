@@ -7,7 +7,7 @@ class Drawer : public QObject
 	Q_OBJECT
 private:
     const int BYTES_IN_PIXEL = 3;
-    const double ERROR = 0.01;
+    const double ERROR = 0.001;
 
     Point* getPointOnCurve(Point *p0, Point *p1, Point *p2, double t);
     double distanceToLine(Point* point, Point * onLinePoint1, Point *onLinePoint2);
@@ -19,6 +19,10 @@ private:
     QPair<double, double> findYLimits(QList<Point *> points);
     void computeCrossPointWithLine(Point* prev, Point* curr, int y, QList<Point *>& crossPoints);
     void computeCrossPointWithCurve(Point *p0, Point *p1, Point *p2, int y, QList<Point *> &crossPoints);
+    static bool compareByXValue(const Point* a, const Point* b);
+    bool isCrossingLines(double a1, double b1, double a2, double b2);
+    bool isTangentLine(Point *p0, Point *p1, Point *p2, double t);
+
 
 public:
 	Drawer(QObject *parent = 0);

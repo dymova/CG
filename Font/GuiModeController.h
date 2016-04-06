@@ -1,12 +1,10 @@
 #pragma once
 #include "ConfigParser.h"
 #include "Serializer.h"
-//#include "DrawPanel.h"
 #include "ControlPanel.h"
 #include "MainWindow.h"
 #include <QCheckBox>
 
-//class DrawPanel;
 
 class GuiModeController : QObject
 {
@@ -18,8 +16,8 @@ public:
 
     const int XY_MIN = -10000;
     const int XY_MAX = 10000;
-    const int SCALE_MAX = 10000;
-    const int SCALE_MIN = -10000;
+    const int SCALE_MAX = 1000;
+    const int SCALE_MIN = -1000;
 
 
     const int DEFAULT_WIDTH = 300;
@@ -27,7 +25,6 @@ public:
     const int DEFAULT_X = 0;
     const int DEFAULT_Y = 0;
     const int DEFAULT_SCALE = 0;
-//    const int DEFAULT_SCALE = 155;
     const bool DEFAULT_FILL = true;
     const bool DEFAULT_OUTLINE = true;
 

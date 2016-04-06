@@ -90,11 +90,11 @@ void Configuration::read(const QJsonObject &json)
 
     QJsonValue fillValue = json[KEY_FILL];
     Utils::checkValue(KEY_FILL, fillValue);
-    fill = fillValue.toInt();
+    fill = fillValue.toBool();
 
     QJsonValue outlineValue = json[KEY_OUTLINE];
     Utils::checkValue(KEY_OUTLINE, outlineValue);
-    outline = outlineValue.toInt();
+    outline = outlineValue.toBool();
 
     QJsonValue glyphsValue = json[KEY_GLYPHS];
     Utils::checkValue(KEY_GLYPHS, glyphsValue);

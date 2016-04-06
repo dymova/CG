@@ -38,7 +38,13 @@ void Panel::setHeight(int height)
 void Panel::read(const QJsonObject& jsonObject)
 {
     QJsonValue panelValue = jsonObject[KEY_PANEL];
-    Utils::checkValue(KEY_PANEL, panelValue);
+    if (panelValue == QJsonValue::Undefined)
+    {
+        width = DEFAULT_WIDTH;
+        height = DEFAULT_HEIGHT;
+        return;
+    }
+
 	QJsonObject jsonPanel = panelValue.toObject();
 
     QJsonValue panelSizeValue = jsonPanel[KEY_SIZE];
