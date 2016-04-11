@@ -21,7 +21,7 @@ private:
     void computeCrossPointWithCurve(Point *p0, Point *p1, Point *p2, int y, QList<Point *> &crossPoints);
     static bool compareByXValue(const Point* a, const Point* b);
     bool isCrossingLines(double a1, double b1, double a2, double b2);
-    bool isTangentLine(Point *p0, Point *p1, Point *p2, double t);
+    bool isTangentLine(Point *p0, Point *p1, Point *p2, double t, double a1, double b1);
 
 
 public:

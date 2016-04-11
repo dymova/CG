@@ -54,6 +54,7 @@ void DrawPanel::paintEvent(QPaintEvent* )
         drawer->drawFill(&image, config, blue);
     }
 
+
     painter.drawImage(0, 0, image);
 }
 

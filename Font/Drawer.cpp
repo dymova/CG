@@ -12,12 +12,17 @@ QObject(parent)
 {
 }
 
-
-
 void Drawer::drawOutline(QImage* image, Configuration* config, QColor color)
 {
     Figure* figure = config->getFigure();
     QList<Point *> points =  transformCoordinates(figure->getPoints(), config);
+
+
+    for(Point* p: points)
+    {
+        drawFocus(image, p->getX(), p->getY());
+    }
+
     Point* prev = points.first();
     int len = points.length();
     for(int i = 1; i <= len; i++)
@@ -94,19 +99,30 @@ void Drawer::computeCrossPointWithLine(Point *prev, Point *curr, int y0, QList<P
         {
             return;
         }
-        int x = round((-b*y0 - c) / a);
-        if((round(x1) <= x && x <= round(x2))
-            || (round(x2) <= x && x <= round(x1)))
+        double x = (-b*y0 - c) / a;
+        if((x1  - x) <= ERROR && (x - x2) <= ERROR
+            || (x2 - x)<= ERROR && (x - x1)<= ERROR)
+//            if(fabs(x1  - x) <= ERROR && fabs(x - x2) <= ERROR
+//                    || fabs(x2 - x)<= ERROR && fabs(x - x1)<= ERROR)
         {
             if(fabs(x - prev->getX()) >= ERROR || fabs(y0 - prev->getY()) >= ERROR)
             {
                 crossPoints.append(new Point(x,y0, true));
             }
         }
+//        int x = round((-b*y0 - c) / a);
+//        if((round(x1) <= x && x <= round(x2))
+//                || (round(x2) <= x && x <= round(x1)))
+//        {
+//            if(fabs(x - prev->getX()) >= ERROR || fabs(y0 - prev->getY()) >= ERROR)
+//            {
+//                crossPoints.append(new Point(x,y0, true));
+//            }
+//        }
     }
     else
     {
-        //c1 == k*c2 => the same
+        //c1 == k*c2 => the same lines
         if(c == 0 && y0 == 0) {
             crossPoints.append(curr);
             return;
@@ -117,20 +133,22 @@ void Drawer::computeCrossPointWithLine(Point *prev, Point *curr, int y0, QList<P
     }
 }
 
-bool Drawer::isTangentLine(Point *p0, Point *p1, Point *p2, double t)
+bool Drawer::isTangentLine(Point *p0, Point *p1, Point *p2, double t,double a1, double b1)
 {
-    double a = 2*(t - 1)*p0->getY()+ 2*(1-2*t)*p1->getY() + 2*t*p2->getY();
-    double b = -(2*(t - 1)*p0->getX()+ 2*(1-2*t)*p1->getX() + 2*t*p2->getX());
-//    double c = -a*pt->getX() - b*pt->getY();
+    double a2 = 2*(t - 1)*p0->getY()+ 2*(1-2*t)*p1->getY() + 2*t*p2->getY();
+    double b2 = -(2*(t - 1)*p0->getX()+ 2*(1-2*t)*p1->getX() + 2*t*p2->getX());
 
-    return !isCrossingLines(a, b, 0, 1);
+    return !isCrossingLines(a1, b1, a2, b2);
 }
 
 void Drawer::computeCrossPointWithCurve(Point *p0, Point *p1, Point *p2, int y, QList<Point *> &crossPoints)
 {
-    double p0y = p0->getY();
-    double p1y = p1->getY();
-    double p2y = p2->getY();
+    double p0y = round(p0->getY());
+    double p1y = round(p1->getY());
+    double p2y = round(p2->getY());
+//    double p0y = p0->getY();
+//    double p1y = p1->getY();
+//    double p2y = p2->getY();
 
     double a = (p0y - 2*p1y + p2y);
     double t1;
@@ -148,24 +166,29 @@ void Drawer::computeCrossPointWithCurve(Point *p0, Point *p1, Point *p2, int y, 
         t2 = t1;
     }
 
+    if(t1 == t2 && (t1 == 0) && isTangentLine(p0, p1, p2, t1, 0, 1)) {
+        Point* point1 = getPointOnCurve(p0, p1, p2, t1);
+        double x1 = point1->getX();
+        crossPoints.append(new Point(x1, y, true));
+    }
 
-    if(t1 > 0 && (t1 - 1) < ERROR)
+    if(t1 > 0 && (t1 - 1) <= 0.000000000000001)
     {
         Point* point1 = getPointOnCurve(p0, p1, p2, t1);
         double x1 = point1->getX();
 
-        if(fabs(p0->getX() - x1) >= ERROR || fabs(p0->getY() - y) >= ERROR)
-        {
-            crossPoints.append(new Point(x1, y, true));
-        }
-        if(t1 == t2 && !isTangentLine(p0, p1, p2, t1)) {
+        crossPoints.append(new Point(x1, y, true));
+        if(t1 == t2 && !isTangentLine(p0, p1, p2, t1, 0, 1)) {
             return;
         }
 
     }
 
-    if(t2 > 0 && (t2 - 1) < ERROR)
+    if(t2 > 0 && (t2 - 1) <=  0.000000000000001)
     {
+        if(t1== t2) {
+            return;
+        }
         Point* point2 = getPointOnCurve(p0, p1, p2, t2);
         double x2 = point2->getX();
         crossPoints.append(new Point(x2, y, true));
@@ -181,15 +204,16 @@ void Drawer::drawFill(QImage *image, Configuration *config, QColor color)
     QList<Point *> points =  transformCoordinates(figure->getPoints(), config);
     QPair<double, double> limitsY = findYLimits(points);
     QList<Point *>  crossPoints;
-    for(int y = limitsY.first; y < limitsY.second; y++){
+    for(int y = limitsY.first; y <= limitsY.second; y++){
         Point* prev = points.first();
+        Point* prevprev = points.last();
         int len = points.length();
 
         for(int i = 1; i <= len; i++)
         {
-            if(y == 13 && i == 9)
+            if(y == 145 && i==1)
             {
-                int k =1234;
+                int k = 123;
             }
             Point* curr = points.at((i + len) % len); //for connect last and first point
             if(!prev->isOncurve() && !curr->isOncurve())
@@ -200,6 +224,14 @@ void Drawer::drawFill(QImage *image, Configuration *config, QColor color)
             if(isLine(prev, curr))
             {
                 computeCrossPointWithLine(prev, curr, y, crossPoints);
+                if (prev->getY() == y)
+                {
+                    if ((prevprev->getY() < y && curr->getY() < y) ||
+                            (prevprev->getY() > y && curr->getY() > y))
+                    {
+                        crossPoints.append(new Point(prev->getX(), prev->getY(), true));
+                    }
+                }
             }
             else if(isCurve(prev, curr))
             {
@@ -209,7 +241,12 @@ void Drawer::drawFill(QImage *image, Configuration *config, QColor color)
                 }
                 computeCrossPointWithCurve(firstOncurve, prev, curr, y, crossPoints);
             }
+
+            prevprev = prev;
             prev = curr;
+        }
+        if(crossPoints.size() % 2 != 0) {
+            int k = 123;
         }
         qSort(crossPoints.begin(), crossPoints.end(), compareByXValue);
         for(int i = 0; i < crossPoints.length(); i++)
@@ -403,12 +440,12 @@ QList<Point *> Drawer::transformCoordinates(QList<Point *> points, Configuration
         {
             k = 1 + (scale / 100);
         }
-        res.append(new Point(round((x + config->getPositionX())*k),
-                             round((y + config->getPositionY())*k),
-                             p->isOncurve()));
-//        res.append(new Point((x + config->getPositionX())*k,
-//                             (y + config->getPositionY())*k,
+//        res.append(new Point(round((x + config->getPositionX())*k),
+//                             round((y + config->getPositionY())*k),
 //                             p->isOncurve()));
+        res.append(new Point((x + config->getPositionX())*k,
+                             (y + config->getPositionY())*k,
+                             p->isOncurve()));
 
     }
     return res;
