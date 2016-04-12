@@ -67,8 +67,6 @@ void DrawPanel::mousePressEvent(QMouseEvent* event)
 void DrawPanel::mouseMoveEvent(QMouseEvent* event)
 {
     QPoint diff = event->pos() - dragStartPosition;
-    qDebug() << "press" << dragStartPosition.x() << dragStartPosition.y();
-    qDebug() << "move" << event->pos().x() << event->pos().y();
 
     if (diff.manhattanLength() >= QApplication::startDragDistance())
     {
