@@ -60,28 +60,23 @@ void Drawer::drawSphere(QImage *image, Configuration *config)
             double shiftX = normalizeShift(config->getPositionX());
             double shiftY = normalizeShift(config->getPositionY());
 
-            //rotate around X
-            double newY = y*cos(shiftY) - z*sin(shiftY);
-            double newZ = y*sin(shiftY) + z*cos(shiftY);
-            //rotate around Y
+            //rotate around X,Y, Z
+//            double newY = y*cos(shiftY) - z*sin(shiftY);
+//            double newZ = y*sin(shiftY) + z*cos(shiftY);
 //            double newX = x*cos(shiftY) + newZ*sin(shiftY);
 //            newZ = -x*sin(shiftY) + newZ*cos(shiftY);
+//            double newX = x*cos(shiftX) - newY*sin(shiftX);
+//            newY = x*sin(shiftX) + newY*cos(shiftX);
+//            QPair<double, double> angles = getSphericalCoordinates(newX, newY, newZ, r);
 
-            //rotate around Z
-            double newX = x*cos(shiftX) - newY*sin(shiftX);
-            newY = x*sin(shiftX) + newY*cos(shiftX);
-
-            QPair<double, double> angles = getSphericalCoordinates(newX, newY, newZ, r);
-//            QPair<double, double> angles = getSphericalCoordinates(x, y, z, r);
+            QPair<double, double> angles = getSphericalCoordinates(x, y, z, r);
             double theta = angles.first;
             double phi = angles.second;
 
-//            double umod = std::fmod(phi + M_PI/2 + shiftX, M_PI);
-            double umod = std::fmod(phi + M_PI/2, M_PI);
+            double umod = std::fmod(phi + M_PI/2 + shiftX, M_PI);
             double u = umod/(M_PI);
 
-            double vmod = std::fmod(theta, M_PI);
-//            double vmod = std::fmod(theta + shiftY, M_PI);
+            double vmod = std::fmod(theta + shiftY, M_PI);
             double v = vmod/(M_PI);
 
             u = 1 - u;

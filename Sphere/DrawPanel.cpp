@@ -77,7 +77,7 @@ void DrawPanel::mouseMoveEvent(QMouseEvent* event)
 
 
         controller->setXValue(x + diff.x()/k);
-        controller->setYValue(y + diff.y()/k);
+        controller->setYValue(y - diff.y()/k);
         dragStartPosition = event->pos();
 
     }
